@@ -1,0 +1,11 @@
+{
+  "name": "react-redux-form-generator",
+  "version": "1.0.0",
+  "description": "Forms generator by JSON-schemas for react/redux",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kujbor",
+  "license": "ISC"
+}
