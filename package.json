@@ -7,5 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kujbor",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kujbor/react-redux-form-generator.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "form",
+    "generator"
+  ],
+  "bugs": {
+    "url": "https://github.com/Kujbor/react-redux-form-generator/issues"
+  },
+  "homepage": "https://github.com/Kujbor/react-redux-form-generator#readme"
 }
