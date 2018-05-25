@@ -1,0 +1,11 @@
+[{
+	"fields": [{
+		"name": "email",
+		"label": "E-mail",
+		"type": "text"
+	}, {
+		"name": "password",
+		"label": "Password",
+		"type": "password"
+	}]
+}]

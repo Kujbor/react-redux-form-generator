@@ -4,7 +4,8 @@
   "description": "Forms generator by JSON-schemas for react/redux",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --production",
+    "start": "webpack-dev-server -d --hot --watch --progress --display-reasons --display-error-details --compress"
   },
   "author": "kujbor",
   "license": "ISC",
@@ -21,5 +22,26 @@
   "bugs": {
     "url": "https://github.com/Kujbor/react-redux-form-generator/issues"
   },
-  "homepage": "https://github.com/Kujbor/react-redux-form-generator#readme"
+  "homepage": "https://github.com/Kujbor/react-redux-form-generator#readme",
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "prop-types": "^15.6.1",
+    "react": "^16.4.0"
+  },
+  "devDependencies": {
+    "args": "^4.0.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "file-loader": "^1.1.11",
+    "moment": "^2.22.1",
+    "react-dom": "^16.4.0",
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
+  }
 }
