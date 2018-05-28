@@ -1,28 +1,14 @@
 import _ from 'lodash';
-// import { extend } from 'jquery';
-// import { compose } from 'redux';
+import { extend } from 'jquery';
+import { compose } from 'redux';
 import { Component } from 'react';
 import propTypes from 'prop-types';
-// import { connect } from 'react-redux';
-// import { reduxForm, Field } from 'redux-form';
+import { connect } from 'react-redux';
+import { reduxForm, Field } from 'redux-form';
 
-// import FileField from './FileField';
-// import DateField from './DateField';
-// import TextField from './TextField';
-// import PhoneField from './PhoneField';
-// import RadioField from './RadioField';
-// import SelectField from './SelectField';
-// import StaticField from './StaticField';
-// import ButtonsField from './ButtonsField';
-// import AddressField from './AddressField';
-// import TurnoverField from './TurnoverField';
-// import FieldWrapper from './FieldWrapper';
-// import BlockWrapper from './BlockWrapper';
+import log from '../utils/log';
 
-// import countries from './countries.json';
-// import taxDepartments from './taxDepartments.json';
-
-// import * as validators from './validators';
+import * as validators from '../utils/validators';
 
 export class ReactReduxFormGenerator extends Component {
 
@@ -43,6 +29,7 @@ export class ReactReduxFormGenerator extends Component {
 
 	static defaultProps = {
 		id: null,
+		data: {},
 		children: null,
 		handleChange: null,
 		initialValues: {},
@@ -106,17 +93,7 @@ export class ReactReduxFormGenerator extends Component {
 		const { name } = target;
 		const { blockSelector, handleChange, change, data: { [name]: value } } = this.props;
 
-		setTimeout(() => {
-
-			if (handleChange) handleChange(name, value, change);
-
-			const changedControl = $(target).get(0);
-			const focusedControl = $(':focus').get(0);
-			const $currentControl = $(focusedControl || changedControl);
-			const $currentBlock = $currentControl.closest(blockSelector);
-
-			this.scrollToFirstIncompleteBlock($currentBlock.attr('id'));
-		});
+		setTimeout(() => handleChange && handleChange(name, value, change));
 	}
 
 	handleEnterKeyPress = event => {
@@ -160,42 +137,6 @@ export class ReactReduxFormGenerator extends Component {
 
 		setTimeout(() => $field.focus(), 500);
 	})
-
-	scrollToFirstIncompleteBlock = (currentIndex, secondTry) => {
-
-		// Method disabled while the algorithm is not confirmed
-		return;
-
-		const { schema, data } = this.props;
-
-		let finded;
-
-		for (const blockIndex in schema) {
-
-			const block = schema[blockIndex];
-
-			if (!secondTry && !finded && blockIndex !== currentIndex) continue;
-			else finded = true;
-
-			if (block.parent && !block.created) continue;
-			if (!this.isVisible(block.showIf, data)) continue;
-
-			for (const fieldIndex in block.fields) {
-
-				const field = block.fields[fieldIndex];
-				const validations = field.validations;
-
-				if (field.type === 'hidden') continue;
-				if (data[field.name]) continue;
-				if (secondTry && (!validations || validations.indexOf('required') === -1)) continue;
-				if (!this.isVisible(field.showIf, data)) continue;
-
-				return this.scrollToBlock($(`#${ blockIndex }`).get(0));
-			}
-		}
-
-		if (!secondTry) this.scrollToFirstIncompleteBlock(currentIndex, true);
-	}
 
 	scrollToFirstIncompleteRequiredField = () => {
 
@@ -327,7 +268,7 @@ export class ReactReduxFormGenerator extends Component {
 		return _.flatten(this.getAllVisible(schema, data).map(block => block.fields));
 	}
 
-	static getVisibleOptions(options, data) {
+	static getVisibleOptions(options = [], data) {
 		return options.filter(option => this.isVisible(option.showIf, data));
 	}
 
@@ -355,7 +296,7 @@ export class ReactReduxFormGenerator extends Component {
 
 	renderBlock(block, index) {
 
-		const { data } = this.props;
+		const { data, templates: { BlockWrapper } } = this.props;
 		const { title, caption, fields, parent, created, showIf } = block;
 
 		if (parent && !created) return;
@@ -363,7 +304,7 @@ export class ReactReduxFormGenerator extends Component {
 
 		if (!fields.reduce((memo, field) => {
 			return memo || field.type !== 'hidden';
-		}, false)) return fields.map(field => this.renderWrappedField(field));
+		}, false)) return fields.map(field => this.renderWrapper(field));
 
 		return (
 			<BlockWrapper
@@ -374,14 +315,14 @@ export class ReactReduxFormGenerator extends Component {
 				caption={ caption }
 				onFocus={ this.handleBlockFocus }
 			>
-				{ fields.map(field => this.renderWrappedField(field)) }
+				{ fields.map(field => this.renderWrapper(field)) }
 			</BlockWrapper>
 		);
 	}
 
-	renderWrappedField(field) {
+	renderWrapper(field) {
 
-		const { data } = this.props;
+		const { data, templates: { FieldWrapper } } = this.props;
 		const { type, name, half, showIf } = field;
 
 		if (!this.isVisible(showIf, data)) return;
@@ -403,192 +344,31 @@ export class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderField = field => ({
-		// regselect: this.renderRegSelectField,
-		turnover: this.renderTurnoverField,
-		address: this.renderAddressField,
-		country: this.renderCountryField,
-		buttons: this.renderButtonsField,
-		select: this.renderSelectField,
-		static: this.renderStaticField,
-		radio: this.renderRadioField,
-		phone: this.renderPhoneField,
-		date: this.renderDateField,
-		file: this.renderFileField
-	}[field.type] || this.renderDefaultField)(field)
+	renderField({ type, name, extra, label, caption, options, multiple, placeholder, defaultValue, component, validations }) {
 
-	renderStaticField = ({ type, name, label, extra, validations }) => (
-		<Field
-			type={ type }
-			name={ name }
-			label={ label }
-			extra={ extra }
-			component={ StaticField }
-			validate={ this.getBindedFieldValidators(validations) }
-		/>
-	)
+		const { data, templates: { [type]: FieldRenderer } } = this.props;
 
-	renderTurnoverField = ({ name, label, placeholder, validations }) => (
-		<Field
-			name={ name }
-			label={ label }
-			placeholder={ placeholder || '' }
-			component={ TurnoverField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onChange={ this.handleChange }
-		/>
-	)
-
-	renderRegSelectField = ({ name, label, placeholder, validations }) => (
-		<Field
-			name={ name }
-			options={ taxDepartments }
-			label={ label }
-			placeholder={ placeholder || '' }
-			component={ SelectField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onChange={ this.handleChange }
-		/>
-	)
-
-	renderFileField = ({ name, label, caption, extra, validations }) => {
-
-		const { uuid } = this.props;
+		log('ReactReduxFormGenerator -> renderField', { name, options });
 
 		return (
 			<Field
-				uuid={ uuid }
+				type={ type }
 				name={ name }
+				extra={ extra }
 				label={ label }
 				caption={ caption }
-				extra={ extra }
-				component={ FileField }
-				validate={ this.getBindedFieldValidators(validations) }
-				onChange={ this.handleChange }
-			/>
-		);
-	}
-
-	renderAddressField = ({ name, label, placeholder, validations }) => (
-		<Field
-			name={ name }
-			label={ label }
-			placeholder={ placeholder || '' }
-			component={ AddressField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onBlur={ this.handleChange }
-		/>
-	)
-
-	renderCountryField = ({ name, label, multiple, placeholder, validations }) => {
-
-		const { data } = this.props;
-
-		return (
-			<Field
-				name={ name }
-				options={ this.getVisibleOptions(countries, data) }
-				label={ label }
-				placeholder={ placeholder || '' }
-				component={ SelectField }
-				multiple={ multiple }
-				validate={ this.getBindedFieldValidators(validations) }
-				onChange={ this.handleChange }
-			/>
-		);
-	}
-
-	renderPhoneField = ({ name, label, extra, validations }) => (
-		<Field
-			name={ name }
-			label={ label }
-			extra={ extra }
-			component={ PhoneField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onKeyPress={ this.handleEnterKeyPress }
-			onBlur={ this.handleChange }
-		/>
-	)
-
-	renderSelectField = ({ name, label, placeholder, options, multiple, validations, extra }) => {
-
-		const { data } = this.props;
-
-		return (
-			<Field
-				name={ name }
-				label={ label }
-				extra={ extra }
-				placeholder={ placeholder || '' }
 				options={ this.getVisibleOptions(options, data) }
-				component={ SelectField }
 				multiple={ multiple }
+				placeholder={ placeholder || '' }
+				defaultValue={ defaultValue }
+				component={ FieldRenderer || component }
 				validate={ this.getBindedFieldValidators(validations) }
+				onKeyPress={ this.handleEnterKeyPress }
 				onChange={ this.handleChange }
+				onBlur={ this.handleChange }
 			/>
 		);
 	}
-
-	renderRadioField = ({ name, label, options, validations }) => {
-
-		const { data } = this.props;
-
-		return (
-			<Field
-				name={ name }
-				label={ label }
-				options={ this.getVisibleOptions(options, data) }
-				component={ RadioField }
-				validate={ this.getBindedFieldValidators(validations) }
-				onChange={ this.handleChange }
-			/>
-		);
-	}
-
-	renderButtonsField = ({ name, label, options, validations }) => {
-
-		const { data } = this.props;
-
-		const visibleOptions = this.getVisibleOptions(options, data);
-		const bindedFieldValidators = this.getBindedFieldValidators(validations);
-
-		return (
-			<Field
-				name={ name }
-				label={ label }
-				options={ visibleOptions }
-				component={ ButtonsField }
-				validate={ bindedFieldValidators }
-				onChange={ this.handleChange }
-			/>
-		);
-	}
-
-	renderDateField = ({ name, label, validations }) => (
-		<Field
-			name={ name }
-			label={ label }
-			component={ DateField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onKeyPress={ this.handleEnterKeyPress }
-			onBlur={ this.handleChange }
-		/>
-	)
-
-	renderDefaultField = ({ type, name, label, placeholder, validations, component, extra, defaultValue }) => (
-		<Field
-			type={ type }
-			name={ name }
-			label={ label }
-			extra={ extra }
-			defaultValue={ defaultValue }
-			placeholder={ placeholder || '' }
-			component={ component || TextField }
-			validate={ this.getBindedFieldValidators(validations) }
-			onKeyPress={ this.handleEnterKeyPress }
-			onBlur={ this.handleChange }
-		/>
-	)
 
 	render() {
 
@@ -618,4 +398,4 @@ export class ReactReduxFormGenerator extends Component {
 
 const mapStateToProps = (state, props) => ({ form: props.form });
 
-export default compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(FormGenerator);
+export default compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);

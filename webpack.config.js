@@ -40,6 +40,7 @@ const webpackConfig = {
 	},
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
+		new webpack.ProvidePlugin({ React: 'react' }),
 		new webpack.DefinePlugin(_.mapValues(options, value => JSON.stringify(value)))
 	],
 	module: {
@@ -65,7 +66,9 @@ const webpackConfig = {
 		inline: true,
 		contentBase: './build',
 		historyApiFallback: true,
-		headers: { 'Access-Control-Allow-Origin': '*' }
+		headers: {
+			'Access-Control-Allow-Origin': '*'
+		}
 	},
 	performance: {
 		hints: false

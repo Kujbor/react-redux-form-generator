@@ -1,14 +1,20 @@
 import moment from 'moment';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { reducer as formReducer } from 'redux-form';
+import { createStore, combineReducers } from 'redux';
 
+import log from './utils/log';
 import Demo from './components/Demo';
 
 import './index.html';
 
-log('builded at', moment(process.env.TIMESTAMP).format('dddd, Do MMMM YYYY, h:mm:ss a'), process.env.CI_RUNNER_REF, process.env.CI_RUNNER_JOB);
+log('builded at', moment(process.env.TIMESTAMP).format('dddd, Do MMMM YYYY, h:mm:ss a'));
 
-window.__app_body = document.body;
-window.__app_html = document.documentElement;
-window.__app_container = document.getElementById('root');
+const store = createStore(combineReducers({ form: formReducer }));
 
-ReactDOM.render(<Demo />, __app_container);
+ReactDOM.render(
+	<Provider store={ store }>
+		<Demo />
+	</Provider>
+, document.getElementById('root'));
