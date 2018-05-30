@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { Component } from 'react';
 import propTypes from 'prop-types';
 import classNames from 'classnames';
-import { _extend as extend } from 'util';
 
 import log from '../utils/log';
 import FormLabel from './FormLabel';
@@ -11,22 +10,18 @@ import InvalidFeedback from './InvalidFeedback';
 export default class SelectField extends Component {
 
 	static propTypes = {
-		meta: propTypes.object,
-		onBlur: propTypes.func,
-		input: propTypes.object,
-		extra: propTypes.object,
+		type: propTypes.string.isRequired,
+		meta: propTypes.object.isRequired,
+		input: propTypes.object.isRequired,
 		label: propTypes.string,
-		options: propTypes.array,
-		multiple: propTypes.bool,
-		onChange: propTypes.func
-	}
+		extra: propTypes.object,
+		options: propTypes.array.isRequired
+	};
 
-	shouldComponentUpdate({ input: { value: nextValue }, meta: nextMeta }) {
-
-		const { input: { value: previousValue }, meta: previousMeta } = this.props;
-
-		return nextValue !== previousValue || !_.isEqual(nextMeta, previousMeta);
-	}
+	static defaultProps = {
+		label: '',
+		extra: {}
+	};
 
 	handleBlur = event => this.setInputValue('onBlur', this.getReduxValueByNativeEvent(event))
 	handleChange = event => this.setInputValue('onChange', this.getReduxValueByNativeEvent(event))
@@ -38,7 +33,7 @@ export default class SelectField extends Component {
 		eventHandler({
 			preventDefault: () => {},
 			stopPropagation: () => {},
-			target: extend(this.input, { value: value || null })
+			target: Object.assign(this.input, { value: value || null })
 		});
 	}
 
@@ -63,11 +58,12 @@ export default class SelectField extends Component {
 
 	render() {
 
-		const { meta, input, label, options, multiple } = this.props;
+		const { type, meta, input, label, extra, options } = this.props;
+		const { multiple } = extra;
 
 		options.forEach(option => option.label = option.label || option.value);
 
-		log('SelectField', { name: input.name, options });
+		log('SelectField -> render', { meta, input, label, extra, options });
 
 		return (
 			<div className='form-group row'>
@@ -85,6 +81,7 @@ export default class SelectField extends Component {
 							'is-invalid': meta && meta.touched && (meta.warning || meta.error),
 							'is-valid': this.nativeValue && (!meta || (!meta.warning && !meta.error))
 						}) }
+						{ ...extra }
 						value={ this.nativeValue }
 						multiple={ multiple }
 						onBlur={ this.handleBlur }
@@ -93,7 +90,7 @@ export default class SelectField extends Component {
 						{ !multiple && <option /> }
 						{ options.map(({ label: optionLabel, value: optionValue }) => (
 							<option
-								key={ optionValue }
+								key={ Math.random() }
 								value={ optionValue }
 								title={ optionLabel }
 							>

@@ -4,8 +4,8 @@ export default class FieldWrapper extends Component {
 
 	render() {
 
-		const { children } = this.props;
+		const { children, half, ...props } = this.props;
 
-		return <div>{ children }</div>;
+		return <div { ...props }>{ children }</div>;
 	}
 }

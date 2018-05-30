@@ -2,7 +2,8 @@
 	"fields": [{
 		"name": "name",
 		"label": "Name",
-		"type": "text"
+		"type": "text",
+		"validations": ["required", "letters"]
 	}, {
 		"name": "age",
 		"label": "Age",
@@ -33,7 +34,8 @@
 			"value": "29"
 		}, {
 			"value": "30"
-		}]
+		}],
+		"validations": ["required"]
 	}, {
 		"name": "sex",
 		"label": "Sex",
@@ -44,14 +46,17 @@
 		}, {
 			"label": "Girl",
 			"value": "woman"
-		}]
+		}],
+		"validations": ["required"]
 	}, {
 		"name": "email",
 		"label": "Email",
-		"type": "email"
+		"type": "email",
+		"validations": ["required", "email"]
 	}, {
 		"name": "password",
 		"label": "Password",
-		"type": "password"
+		"type": "password",
+		"validations": ["required"]
 	}]
 }]

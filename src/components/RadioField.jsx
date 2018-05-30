@@ -1,16 +1,34 @@
 import { Component } from 'react';
+import propTypes from 'prop-types';
 import classNames from 'classnames';
 
+import log from '../utils/log';
 import FormLabel from './FormLabel';
 import InvalidFeedback from './InvalidFeedback';
 
 export default class RadioField extends Component {
 
+	static propTypes = {
+		type: propTypes.string.isRequired,
+		meta: propTypes.object.isRequired,
+		input: propTypes.object.isRequired,
+		label: propTypes.string,
+		extra: propTypes.object,
+		options: propTypes.array.isRequired
+	};
+
+	static defaultProps = {
+		label: '',
+		extra: {}
+	};
+
 	render() {
 
-		const { meta, input, label, options } = this.props;
+		const { type, meta, input, label, extra, options } = this.props;
 
 		options.forEach(option => option.label = option.label || option.value);
+
+		log('RadioField -> render', { input });
 
 		return (
 			<div className='form-group row'>

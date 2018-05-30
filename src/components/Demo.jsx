@@ -11,26 +11,23 @@ import BlockWrapper from './BlockWrapper';
 import FieldWrapper from './FieldWrapper';
 import FormGenerator from './ReactReduxFormGenerator';
 
+import * as validators from '../utils/validators';
+
 class Demo extends Component {
 
 	static propTypes = {
-		data: propTypes.object.isRequired
+		form: propTypes.object.isRequired
 	}
 
 	static defaultProps = {
-		data: {}
+		form: {}
 	}
 
-	handleSubmit = rest => {
-
-		const { data } = this.props;
-
-		log('Demo -> handleSubmit', { data, rest });
-	}
+	handleSubmit = values => log('Demo -> handleSubmit', { values })
 
 	render() {
 
-		const { data } = this.props;
+		const { form } = this.props;
 
 		return (
 			<div className='container d-flex flex-column justify-content-center h-100'>
@@ -38,9 +35,10 @@ class Demo extends Component {
 				<hr />
 				<FormGenerator
 					form='demo'
-					data={ data }
+					data={ form.values }
 					schema={ schema }
 					blockSelector='.form-group'
+					validators={ validators }
 					templates={{
 						BlockWrapper,
 						FieldWrapper,
@@ -50,7 +48,7 @@ class Demo extends Component {
 						select: SelectField,
 						password: TextField
 					}}
-					onSubmit={ this.handleSubmit}
+					onSubmit={ this.handleSubmit }
 				>
 					<button
 						type='submit'
@@ -64,7 +62,7 @@ class Demo extends Component {
 	}
 }
 
-const mapStateToProps = state => ({ data: state.form.demo });
+const mapStateToProps = state => ({ form: state.form.demo });
 
 const mapDispatchToProps = dispatch => bindActionCreators(actions, dispatch);
 

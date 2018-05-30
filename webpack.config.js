@@ -50,7 +50,7 @@ const webpackConfig = {
 			loader: 'babel-loader',
 			query: {
 				presets: ['env', 'react'],
-				plugins: ['transform-runtime', 'transform-class-properties']
+				plugins: ['transform-runtime', 'transform-class-properties', 'transform-object-rest-spread']
 			}
 		}, {
 			test: /\.html$/,
