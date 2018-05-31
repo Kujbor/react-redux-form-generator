@@ -5,7 +5,6 @@ import { reducer as formReducer } from 'redux-form';
 import { createStore, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import log from './utils/log';
 import Demo from './components/Demo';
 
 import './index.html';

@@ -1,10 +1,9 @@
 import { Component } from 'react';
 import propTypes from 'prop-types';
-import classNames from 'classnames';
 
-import log from '../utils/log';
 import FormLabel from './FormLabel';
 import InvalidFeedback from './InvalidFeedback';
+import inputClassNames from '../utils/inputClassNames';
 
 export default class RadioField extends Component {
 
@@ -14,12 +13,13 @@ export default class RadioField extends Component {
 		input: propTypes.object.isRequired,
 		label: propTypes.string,
 		extra: propTypes.object,
-		options: propTypes.array.isRequired
+		options: propTypes.array
 	};
 
 	static defaultProps = {
 		label: '',
-		extra: {}
+		extra: {},
+		options: []
 	};
 
 	render() {
@@ -28,7 +28,7 @@ export default class RadioField extends Component {
 
 		options.forEach(option => option.label = option.label || option.value);
 
-		log('RadioField -> render', { input });
+		log('RadioField -> render', { type, meta, input, label, options, extra });
 
 		return (
 			<div className='form-group row'>
@@ -38,16 +38,12 @@ export default class RadioField extends Component {
 						<div key={ option.value } className='form-check'>
 							<label className='form-check-label'>
 								<input
-									className={ classNames({
-										'form-check-input': true,
-										'is-invalid': meta && meta.touched && (meta.warning || meta.error),
-										'is-valid': input.value && (!meta || (!meta.warning && !meta.error))
-									}) }
+									className={ inputClassNames({ input, meta, type }) }
 									type='radio'
-									name={ input.name }
+									{ ...input }
+									{ ...extra }
 									value={ option.value }
 									checked={ option.value === input.value }
-									onChange={ input.onChange }
 								/>
 								&nbsp;
 								{ option.label }

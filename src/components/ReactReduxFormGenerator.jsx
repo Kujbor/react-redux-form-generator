@@ -5,8 +5,6 @@ import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 
-import log from '../utils/log';
-
 export class ReactReduxFormGenerator extends Component {
 
 	static propTypes = {
@@ -34,19 +32,7 @@ export class ReactReduxFormGenerator extends Component {
 		onSubmit: () => {}
 	};
 
-	constructor(props) {
-
-		super(props);
-
-		this.isVisible = this.constructor.isVisible;
-		this.isFieldValid = this.constructor.isFieldValid;
-		this.getAllVisible = this.constructor.getAllVisible;
-		this.getVisibleFields = this.constructor.getVisibleFields;
-		this.getVisibleOptions = this.constructor.getVisibleOptions;
-		this.getInvalidateFields = this.constructor.getInvalidateFields;
-		this.fieldValidatorsCasche = this.constructor.fieldValidatorsCasche;
-		this.getFieldValidatorsBinders = this.constructor.getFieldValidatorsBinders;
-
+	componentWillMount = () => {
 		this.normaliseSchema();
 	}
 
@@ -61,7 +47,7 @@ export class ReactReduxFormGenerator extends Component {
 		if (field.add && value && value !== 'no') this.addBlock(value);
 	}
 
-	addBlock(name, silence) {
+	addBlock = (name, silence) => {
 
 		const { schema } = this.props;
 
@@ -130,7 +116,7 @@ export class ReactReduxFormGenerator extends Component {
 		if (!silence) this.forceUpdate();
 	}
 
-	normaliseSchema() {
+	normaliseSchema = () => {
 
 		const { initialValues, schema } = this.props;
 
@@ -159,36 +145,38 @@ export class ReactReduxFormGenerator extends Component {
 		}
 	}
 
-	static isVisible(checker, data) {
+	isVisible = (checker, data) => {
 		return !checker || (data && new Function('data', `return ${ checker };`).call(this, data));
 	}
 
-	static isFieldValid({ field, data }) {
+	isFieldValid = ({ field, data }) => {
 		return this.getFieldValidatorsBinders(field.validations).reduce((memo, binder) => memo && !binder({ props: { data } })(data[field.name]), true);
 	}
 
-	static getInvalidateFields({ schema, data }) {
+	getInvalidateFields = ({ schema, data }) => {
 		return this.getVisibleFields(schema, data).filter(field => !this.isFieldValid({ field, data }));
 	}
 
-	static getAllVisible(schema, data) {
+	getAllVisible = (schema, data) => {
 
 		return schema.filter(block => this.isVisible(block.showIf, data)).map(block => Object.assign({}, block, {
 			fields: block.fields.filter(field => this.isVisible(field.showIf, data))
 		})).filter(block => block.fields.length);
 	}
 
-	static getVisibleFields(schema, data) {
+	getVisibleFields = (schema, data) => {
 		return _.flatten(this.getAllVisible(schema, data).map(block => block.fields));
 	}
 
-	static getVisibleOptions(options = [], data) {
+	getVisibleOptions = (options = [], data) => {
 		return options.filter(option => this.isVisible(option.showIf, data));
 	}
 
-	static fieldValidatorsCasche = {}
+	fieldValidatorsCasche = {}
 
-	static getFieldValidatorsBinders(fieldValidations = [], validators = {}) {
+	getFieldValidators = (fieldValidations = []) => {
+
+		const { validators } = this.props;
 
 		return fieldValidations.map(validation => {
 
@@ -199,30 +187,23 @@ export class ReactReduxFormGenerator extends Component {
 				const name = validation.match(/^\w+/igm)[0];
 				const args = validation.match(/[^\(\)]+(?=\))/igm);
 
-				if (!validators[name]) throw new Error(`Unable to find validator for "${ name }" validation`);
-				if (typeof validators[name] !== 'function') throw new Error(`Validator for "${ name }" validation is not a function`);
+				if (!validators[name]) throw new Error(`Unable to find creator of the validator for "${ name }" validation`);
+				if (typeof validators[name] !== 'function') throw new Error(`Creator of the validator for "${ name }" validation is not a function`);
 				if (typeof validators[name]() !== 'function') throw new Error(`Creator of the validator for "${ name }" does not return a function`);
 
 				const parsedArgs = args ? args[0].split(/,/).map(arg => JSON.parse(arg.replace(/'/igm, '"'))) : [];
 
-				return context => this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[name].apply(context, parsedArgs);
+				return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[name].apply(this, parsedArgs);
 			}
 
 			if (!validators[validation]) throw new Error(`Unable to find validator for "${ validation }" validation`);
 			if (typeof validators[validation] !== 'function') throw new Error(`Validator for "${ validation }" validation is not a function`);
 
-			return context => this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[validation].bind(context);
+			return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[validation].bind(this);
 		});
 	}
 
-	getBindedFieldValidators(fieldValidations) {
-
-		const { validators } = this.props;
-
-		return this.getFieldValidatorsBinders(fieldValidations, validators).map(binder => binder(this));
-	}
-
-	renderBlock(block, index) {
+	renderBlock = (block, index) => {
 
 		const { data, templates: { BlockWrapper } } = this.props;
 		const { title, caption, fields, parent, created, showIf } = block;
@@ -247,7 +228,7 @@ export class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderWrapper(field) {
+	renderWrapper = (field) => {
 
 		const { data, templates: { FieldWrapper } } = this.props;
 		const { type, name, half, showIf } = field;
@@ -271,7 +252,7 @@ export class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderField({ type, name, label, extra, options, validations }) {
+	renderField = ({ type, name, label, multiple, options, extra, validations }) => {
 
 		const { data, templates: { [type]: FieldRenderer } } = this.props;
 
@@ -280,22 +261,21 @@ export class ReactReduxFormGenerator extends Component {
 
 		return (
 			<Field
-				type={ `_${ type }` }
+				type={ type }
 				name={ name }
 				label={ label }
 				extra={ extra }
+				multiple={ multiple }
 				options={ this.getVisibleOptions(options, data) }
-				component={ this.wrapCustomType(FieldRenderer) }
-				validate={ this.getBindedFieldValidators(validations) }
+				component={ FieldRenderer }
+				validate={ this.getFieldValidators(validations) }
 				onChange={ this.handleChange }
 				onBlur={ this.handleChange }
 			/>
 		);
 	}
 
-	wrapCustomType = FieldRenderer => ({ type, ...rest }) => <FieldRenderer type={ type.substr(1) } { ...rest } />
-
-	render() {
+	render = () => {
 
 		const {
 			id,
@@ -314,6 +294,6 @@ export class ReactReduxFormGenerator extends Component {
 	}
 }
 
-const mapStateToProps = (state, props) => ({ form: props.form });
+const mapStateToProps = (state, props) => ({ form: props.form, data: state.form.demo ? state.form.demo.values : {} });
 
 export default compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);

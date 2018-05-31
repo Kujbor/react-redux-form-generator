@@ -35,11 +35,12 @@
 		}, {
 			"value": "30"
 		}],
+		"multiple": true,
 		"validations": ["required"]
 	}, {
 		"name": "sex",
 		"label": "Sex",
-		"type": "radio",
+		"type": "radios",
 		"options": [{
 			"label": "Guy",
 			"value": "man"

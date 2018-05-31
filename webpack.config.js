@@ -29,20 +29,12 @@ const webpackConfig = {
 	mode: options.NODE_ENV,
 	entry: [
 		'babel-polyfill',
-		path.resolve(`${ __dirname }/src/index.jsx`)
+		path.resolve(`${ __dirname }/src/${ options.NODE_ENV === 'production' ? 'components/ReactReduxFormGenerator.jsx' : 'index.jsx' }`)
 	],
 	output: {
-		path: path.resolve(`${ __dirname }/build`),
-		filename: 'main.js'
+		path: path.resolve(`${ __dirname }/${ options.NODE_ENV === 'production' ? 'dist' : 'build' }`),
+		filename: options.NODE_ENV === 'production' ? 'react-redux-form-generator.js' : 'main.js'
 	},
-	resolve: {
-		extensions: ['.html', '.css', '.scss', '.js', '.jsx', '.json', '.svg'],
-	},
-	plugins: [
-		new webpack.NoEmitOnErrorsPlugin(),
-		new webpack.ProvidePlugin({ React: 'react' }),
-		new webpack.DefinePlugin(_.mapValues(options, value => JSON.stringify(value)))
-	],
 	module: {
 		rules: [{
 			test: /\.(js|jsx)$/,
@@ -57,22 +49,23 @@ const webpackConfig = {
 			loader: 'file-loader?name=[name].[ext]'
 		}]
 	},
-	watchOptions: {
-		poll: 200,
-		aggregateTimeout: 100
+	plugins: [
+		new webpack.NoEmitOnErrorsPlugin(),
+		new webpack.ProvidePlugin({ React: 'react', log: 'log' }),
+		new webpack.DefinePlugin(_.mapValues(options, value => JSON.stringify(value)))
+	],
+	resolve: {
+		extensions: ['.html', '.css', '.scss', '.js', '.jsx', '.json', '.svg'],
+		alias: { log: path.resolve(`${ __dirname }/src/utils/log`) }
 	},
 	devServer: {
 		port: 3003,
 		inline: true,
 		contentBase: './build',
 		historyApiFallback: true,
-		headers: {
-			'Access-Control-Allow-Origin': '*'
-		}
+		headers: { 'Access-Control-Allow-Origin': '*' }
 	},
-	performance: {
-		hints: false
-	}
+	performance: { hints: false }
 };
 
 module.exports = webpackConfig;
