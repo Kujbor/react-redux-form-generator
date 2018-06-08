@@ -294,6 +294,6 @@ export class ReactReduxFormGenerator extends Component {
 	}
 }
 
-const mapStateToProps = (state, props) => ({ form: props.form, data: state.form.demo ? state.form.demo.values : {} });
+const mapStateToProps = ({ form: forms }, { form: name }) => ({ form: name, data: forms[name] ? forms[name].values : {} });
 
 export default compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);
