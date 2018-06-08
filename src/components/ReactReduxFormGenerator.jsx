@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { compose } from 'redux';
 import { Component } from 'react';
 import propTypes from 'prop-types';

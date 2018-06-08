@@ -22,7 +22,7 @@ const options = {
 };
 
 console.log('\x1b[36m', '================ ENVIRONMENT VARIABLES ================================', '\x1b[0m');
-_.map(options, (prop, key) => console.log('\x1b[32m', key, '\x1b[0m', prop));
+Object.keys(options).map(key => console.log('\x1b[32m', key, '\x1b[0m', options[key]));
 console.log('\x1b[36m', '=======================================================================', '\x1b[0m');
 
 const webpackConfig = {
