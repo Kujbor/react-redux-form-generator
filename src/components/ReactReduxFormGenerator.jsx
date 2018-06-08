@@ -13,11 +13,12 @@ export class ReactReduxFormGenerator extends Component {
 		data: propTypes.object.isRequired,
 		schema: propTypes.array.isRequired,
 		children: propTypes.node,
+		onChange: propTypes.func,
 		onSubmit: propTypes.func,
 		templates: propTypes.object,
+		onValidate: propTypes.func,
 		validators: propTypes.object,
 		handleSubmit: propTypes.func.isRequired,
-		handleChange: propTypes.func,
 		initialValues: propTypes.object
 	};
 
@@ -27,7 +28,7 @@ export class ReactReduxFormGenerator extends Component {
 		children: null,
 		templates: {},
 		validators: {},
-		handleChange: null,
+		onChange: null,
 		initialValues: {},
 		onSubmit: () => {}
 	};
@@ -38,9 +39,13 @@ export class ReactReduxFormGenerator extends Component {
 
 	handleChange = ({ target: { name } }) => {
 
-		const { handleChange, data: { [name]: value } } = this.props;
+		const { onChange, onValidate, data: { [name]: value } } = this.props;
 
-		setTimeout(() => handleChange && handleChange(name, value));
+		setTimeout(() => {
+
+			if (onChange) onChange(name, value);
+			if (onValidate) onValidate(this.getInvalidateFields());
+		});
 	}
 
 	handleClick = ({ target: { value } }, field) => {
@@ -79,7 +84,7 @@ export class ReactReduxFormGenerator extends Component {
 
 			newBlock.fields = newBlock.fields && newBlock.fields.map(field => {
 
-				const newField = JSON.parse(JSON.stringify(field));
+				const newField = { ...field };
 
 				newField.name = `${ newBlock.parent }_${ newBlocksNumber }-${ newField.name }`;
 
@@ -88,7 +93,7 @@ export class ReactReduxFormGenerator extends Component {
 
 				newField.validations = newField.validations && newField.validations.map(validation => {
 
-					let newValidation = JSON.parse(JSON.stringify(validation));
+					let newValidation = { ...validation };
 
 					newValidation = newValidation.replace(parentExp, parentReplacer);
 					newValidation = newValidation.replace(previousExp, previousReplacer);
@@ -98,10 +103,11 @@ export class ReactReduxFormGenerator extends Component {
 
 				newField.options = newField.options && newField.options.map(option => {
 
-					let newOption = JSON.parse(JSON.stringify(option));
+					let newOption = { ...option };
 
 					newOption.showIf = newOption.showIf && newOption.showIf.replace(parentExp, parentReplacer);
 					newOption.showIf = newOption.showIf && newOption.showIf.replace(previousExp, previousReplacer);
+
 					return newOption;
 				});
 
@@ -145,32 +151,34 @@ export class ReactReduxFormGenerator extends Component {
 		}
 	}
 
-	isVisible = (checker, data) => {
+	isVisible = checker => {
+
+		const { data } = this.props;
+
 		return !checker || (data && new Function('data', `return ${ checker };`).call(this, data));
 	}
 
-	isFieldValid = ({ field, data }) => {
-		return this.getFieldValidatorsBinders(field.validations).reduce((memo, binder) => memo && !binder({ props: { data } })(data[field.name]), true);
+	isFieldValid = field => {
+
+		const { data } = this.props;
+
+		return this.getFieldValidators(field.validations).reduce((memo, validator) => memo && !validator(data[field.name]), true);
 	}
 
-	getInvalidateFields = ({ schema, data }) => {
-		return this.getVisibleFields(schema, data).filter(field => !this.isFieldValid({ field, data }));
-	}
+	getInvalidateFields = () => this.getVisibleFields().filter(field => !this.isFieldValid(field))
 
-	getAllVisible = (schema, data) => {
+	getAllVisible = () => {
 
-		return schema.filter(block => this.isVisible(block.showIf, data)).map(block => Object.assign({}, block, {
-			fields: block.fields.filter(field => this.isVisible(field.showIf, data))
+		const { schema } = this.props;
+
+		return schema.filter(block => this.isVisible(block.showIf)).map(block => Object.assign({}, block, {
+			fields: block.fields.filter(field => this.isVisible(field.showIf))
 		})).filter(block => block.fields.length);
 	}
 
-	getVisibleFields = (schema, data) => {
-		return _.flatten(this.getAllVisible(schema, data).map(block => block.fields));
-	}
+	getVisibleFields = () => this.getAllVisible().reduce((memo, block) => memo.concat(block.fields), [])
 
-	getVisibleOptions = (options = [], data) => {
-		return options.filter(option => this.isVisible(option.showIf, data));
-	}
+	getVisibleOptions = (options = []) => options.filter(option => this.isVisible(option.showIf))
 
 	fieldValidatorsCasche = {}
 
@@ -266,11 +274,11 @@ export class ReactReduxFormGenerator extends Component {
 				label={ label }
 				extra={ extra }
 				multiple={ multiple }
-				options={ this.getVisibleOptions(options, data) }
 				component={ FieldRenderer }
-				validate={ this.getFieldValidators(validations) }
-				onChange={ this.handleChange }
 				onBlur={ this.handleChange }
+				onChange={ this.handleChange }
+				options={ this.getVisibleOptions(options) }
+				validate={ this.getFieldValidators(validations) }
 			/>
 		);
 	}

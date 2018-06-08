@@ -1,25 +1,27 @@
 import { Component } from 'react';
 
-import schema from '../data/schema.json';
 import TextField from './TextField';
 import RadioField from './RadioField';
 import SelectField from './SelectField';
 import BlockWrapper from './BlockWrapper';
 import FieldWrapper from './FieldWrapper';
-import FormGenerator from './ReactReduxFormGenerator';
+import FormGenerator, { ReactReduxFormGenerator } from './ReactReduxFormGenerator';
+
+import schema from '../data/schema.json';
 
 import * as validators from '../utils/validators';
 
 export default class Demo extends Component {
 
 	state = {
-		values: {
+		savedValues: {
 			name: 'Олег',
 			age: ['30'],
 			sex: 'man',
 			email: 'Kujbor@ya.ru',
 			password: 'qwe'
-		}
+		},
+		invalidateFields: []
 	}
 
 	componentWillMount() {
@@ -28,7 +30,12 @@ export default class Demo extends Component {
 
 		log('Demo -> componentWillMount', { savedValues });
 
-		if (savedValues) this.setState({ values: JSON.parse(savedValues) });
+		if (savedValues) this.setState({ savedValues: JSON.parse(savedValues) });
+	}
+
+	handleChange = (name, value) => {
+
+		log('Demo -> handleChange', { name, value });
 	}
 
 	handleSubmit = values => {
@@ -38,9 +45,16 @@ export default class Demo extends Component {
 		localStorage.setItem('demo', JSON.stringify(values));
 	}
 
+	handleValidate = invalidateFields => {
+
+		log('Demo -> handleValidate', { invalidateFields });
+
+		this.setState({ invalidateFields });
+	}
+
 	render() {
 
-		const { values } = this.state;
+		const { savedValues, invalidateFields } = this.state;
 
 		return (
 			<div className='container d-flex flex-column justify-content-center h-100'>
@@ -50,7 +64,11 @@ export default class Demo extends Component {
 					id='demo'
 					form='demo'
 					schema={ schema }
-					blockSelector='.form-group'
+					validators={ validators }
+					initialValues={ savedValues }
+					onChange={ this.handleChange }
+					onSubmit={ this.handleSubmit }
+					onValidate={ this.handleValidate }
 					templates={{
 						BlockWrapper,
 						FieldWrapper,
@@ -60,11 +78,15 @@ export default class Demo extends Component {
 						select: SelectField,
 						password: TextField
 					}}
-					validators={ validators }
-					initialValues={ values }
-					onSubmit={ this.handleSubmit }
 				/>
-				<button type='submit' form='demo' className='btn btn-primary btn-lg'>Submit</button>
+				<button
+					form='demo'
+					type='submit'
+					disabled={ invalidateFields.length }
+					className='btn btn-primary btn-lg'
+				>
+					Submit
+				</button>
 			</div>
 		);
 	}
