@@ -1,8 +1,8 @@
 {
   "name": "react-redux-form-generator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Forms generator by JSON-schemas for react/redux",
-  "main": "index.js",
+  "main": "./dist/react-redux-form-generator.js",
   "scripts": {
     "build": "webpack --production",
     "start": "webpack-dev-server -d --hot --watch --progress --display-reasons --display-error-details --compress"
