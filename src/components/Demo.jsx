@@ -12,29 +12,24 @@ import FieldWrapper from './FieldWrapper';
 import ReactReduxFormGenerator from './ReactReduxFormGenerator';
 
 import schema from '../data/schema.json';
+import values from '../data/values.json';
 
 import * as validators from '../utils/validators';
 
 export default class Demo extends Component {
 
 	state = {
-		savedValues: {
-			name: 'Олег',
-			age: ['30'],
-			sex: 'man',
-			email: 'Kujbor@ya.ru',
-			password: 'qwe'
-		},
+		savedValues: values,
 		invalidateFields: []
 	}
 
 	componentWillMount() {
 
-		const savedValues = localStorage.getItem('demo');
+		const savedValues = JSON.parse(localStorage.getItem('demo'));
 
 		log('Demo -> componentWillMount', { savedValues });
 
-		if (savedValues) this.setState({ savedValues: JSON.parse(savedValues) });
+		// if (savedValues) this.setState({ savedValues });
 	}
 
 	handleChange = (name, value) => {
@@ -77,13 +72,20 @@ export default class Demo extends Component {
 					onSubmit={ this.handleSubmit }
 					onValidate={ this.handleValidate }
 					templates={{
-						BlockWrapper,
-						FieldWrapper,
+						block: BlockWrapper,
+						field: FieldWrapper,
 						text: TextField,
+						date: TextField,
+						file: TextField,
 						email: TextField,
+						phone: TextField,
+						static: TextField,
 						radios: RadioField,
 						select: SelectField,
-						password: TextField
+						buttons: SelectField,
+						address: TextField,
+						turnover: SelectField,
+						regselect: SelectField
 					}}
 				/>
 				<button
@@ -99,6 +101,6 @@ export default class Demo extends Component {
 	}
 }
 
-const mapStateToProps = ({ form: forms }, { form: name }) => ({ form: name, data: forms[name] ? forms[name].values : {} });
+const mapStateToProps = ({ form: { demo } }) => ({ form: 'demo', data: demo ? demo.values : {} });
 
 const ConnectedReactReduxFormGenerator = compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);

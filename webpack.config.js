@@ -63,6 +63,10 @@ module.exports = {
 			log: path.resolve(`${ __dirname }/src/utils/log`)
 		}
 	},
+	externals: options.NODE_ENV === 'production' ? {
+		react: 'react',
+		'prop-types': 'prop-types'
+	} : {},
 	devServer: {
 		port: 3003,
 		inline: true,
