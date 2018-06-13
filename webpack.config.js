@@ -25,15 +25,15 @@ console.log('\x1b[36m', '================ ENVIRONMENT VARIABLES ================
 Object.keys(options).map(key => console.log('\x1b[32m', key, '\x1b[0m', options[key]));
 console.log('\x1b[36m', '=======================================================================', '\x1b[0m');
 
-const webpackConfig = {
+module.exports = {
 	mode: options.NODE_ENV,
-	entry: [
-		'babel-polyfill',
-		path.resolve(`${ __dirname }/src/${ options.NODE_ENV === 'production' ? 'components/ReactReduxFormGenerator.jsx' : 'index.jsx' }`)
-	],
+	entry: path.resolve(`${ __dirname }/src/${ options.NODE_ENV === 'production' ? 'components/ReactReduxFormGenerator.jsx' : 'index.jsx' }`),
 	output: {
 		path: path.resolve(`${ __dirname }/${ options.NODE_ENV === 'production' ? 'dist' : 'build' }`),
-		filename: options.NODE_ENV === 'production' ? 'react-redux-form-generator.js' : 'main.js'
+		filename: options.NODE_ENV === 'production' ? 'react-redux-form-generator.js' : 'main.js',
+		library: 'react-redux-form-generator.js',
+		libraryTarget: 'umd',
+		umdNamedDefine: true
 	},
 	module: {
 		rules: [{
@@ -51,21 +51,28 @@ const webpackConfig = {
 	},
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
-		new webpack.ProvidePlugin({ React: 'react', log: 'log' }),
+		new webpack.ProvidePlugin({
+			React: 'react',
+			log: 'log'
+		}),
 		new webpack.DefinePlugin(_.mapValues(options, value => JSON.stringify(value)))
 	],
 	resolve: {
 		extensions: ['.html', '.css', '.scss', '.js', '.jsx', '.json', '.svg'],
-		alias: { log: path.resolve(`${ __dirname }/src/utils/log`) }
+		alias: {
+			log: path.resolve(`${ __dirname }/src/utils/log`)
+		}
 	},
 	devServer: {
 		port: 3003,
 		inline: true,
 		contentBase: './build',
 		historyApiFallback: true,
-		headers: { 'Access-Control-Allow-Origin': '*' }
+		headers: {
+			'Access-Control-Allow-Origin': '*'
+		}
 	},
-	performance: { hints: false }
+	performance: {
+		hints: false
+	}
 };
-
-module.exports = webpackConfig;

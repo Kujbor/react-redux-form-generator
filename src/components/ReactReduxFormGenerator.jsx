@@ -1,10 +1,7 @@
-import { compose } from 'redux';
 import { Component } from 'react';
 import propTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { reduxForm, Field } from 'redux-form';
 
-export class ReactReduxFormGenerator extends Component {
+export default class ReactReduxFormGenerator extends Component {
 
 	static propTypes = {
 		id: propTypes.string,
@@ -261,7 +258,7 @@ export class ReactReduxFormGenerator extends Component {
 
 	renderField = ({ type, name, label, multiple, options, extra, validations }) => {
 
-		const { data, templates: { [type]: FieldRenderer } } = this.props;
+		const { data, templates: { [type]: FieldRenderer }, Field } = this.props;
 
 		if (!FieldRenderer) throw new Error(`Unable to find renderer for "${ type }" field type`);
 		if (typeof FieldRenderer !== 'function') throw new Error(`Renderer for "${ type }" field type is not a function`);
@@ -300,7 +297,3 @@ export class ReactReduxFormGenerator extends Component {
 		);
 	}
 }
-
-const mapStateToProps = ({ form: forms }, { form: name }) => ({ form: name, data: forms[name] ? forms[name].values : {} });
-
-export default compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);

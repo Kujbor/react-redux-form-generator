@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form-generator",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Forms generator by JSON-schemas for react/redux",
   "main": "./dist/react-redux-form-generator.js",
   "scripts": {
@@ -25,10 +25,7 @@
   "homepage": "https://github.com/Kujbor/react-redux-form-generator#readme",
   "dependencies": {
     "prop-types": "^15.6.1",
-    "react": "^16.4.0",
-    "react-redux": "^5.0.7",
-    "redux": "^4.0.0",
-    "redux-form": "^7.3.0"
+    "react": "^16.4.0"
   },
   "devDependencies": {
     "args": "^4.0.0",
@@ -37,7 +34,6 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "classnames": "^2.2.5",
@@ -45,7 +41,10 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "react-dom": "^16.4.0",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.2",
+    "redux-form": "^7.4.0",
     "webpack": "^4.9.1",
     "webpack-cli": "^2.1.4",
     "webpack-dev-server": "^3.1.4"

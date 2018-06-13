@@ -1,5 +1,5 @@
 import moment from 'moment';
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { createStore, combineReducers } from 'redux';
@@ -13,8 +13,9 @@ log('builded at', moment(process.env.TIMESTAMP).format('dddd, Do MMMM YYYY, h:mm
 
 const store = createStore(combineReducers({ form: formReducer }), composeWithDevTools());
 
-ReactDOM.render(
+render(
 	<Provider store={ store }>
 		<Demo />
-	</Provider>
-, document.getElementById('root'));
+	</Provider>,
+	document.getElementById('root')
+);

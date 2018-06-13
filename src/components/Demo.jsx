@@ -1,11 +1,14 @@
+import { compose } from 'redux';
 import { Component } from 'react';
+import { connect } from 'react-redux';
+import { reduxForm, Field } from 'redux-form';
 
 import TextField from './TextField';
 import RadioField from './RadioField';
 import SelectField from './SelectField';
 import BlockWrapper from './BlockWrapper';
 import FieldWrapper from './FieldWrapper';
-import FormGenerator, { ReactReduxFormGenerator } from './ReactReduxFormGenerator';
+import ReactReduxFormGenerator from './ReactReduxFormGenerator';
 
 import schema from '../data/schema.json';
 
@@ -56,13 +59,16 @@ export default class Demo extends Component {
 
 		const { savedValues, invalidateFields } = this.state;
 
+		log('Demo -> render', { ReactReduxFormGenerator, typeofReactReduxFormGenerator: typeof ReactReduxFormGenerator });
+
 		return (
 			<div className='container d-flex flex-column justify-content-center h-100'>
 				<h2>ReactReduxFormGenerator</h2>
 				<hr />
-				<FormGenerator
+				<ConnectedReactReduxFormGenerator
 					id='demo'
 					form='demo'
+					Field={ Field }
 					schema={ schema }
 					validators={ validators }
 					initialValues={ savedValues }
@@ -91,3 +97,7 @@ export default class Demo extends Component {
 		);
 	}
 }
+
+const mapStateToProps = ({ form: forms }, { form: name }) => ({ form: name, data: forms[name] ? forms[name].values : {} });
+
+const ConnectedReactReduxFormGenerator = compose(connect(mapStateToProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);
