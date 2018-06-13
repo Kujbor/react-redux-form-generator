@@ -184,24 +184,24 @@ export default class ReactReduxFormGenerator extends Component {
 
 		return fieldValidations.map(validation => {
 
-			if (typeof validation !== 'string') throw new Error(`Validation name must be a string`);
+			if (typeof validation !== 'string') console.error('[ReactReduxFormGenerator]', `Validation name must be a string`);
 
 			if (validation.match(/\w+\([^\(\)]*\)/igm)) {
 
 				const name = validation.match(/^\w+/igm)[0];
 				const args = validation.match(/[^\(\)]+(?=\))/igm);
 
-				if (!validators[name]) throw new Error(`Unable to find creator of the validator for "${ name }" validation`);
-				if (typeof validators[name] !== 'function') throw new Error(`Creator of the validator for "${ name }" validation is not a function`);
-				if (typeof validators[name]() !== 'function') throw new Error(`Creator of the validator for "${ name }" does not return a function`);
+				if (!validators[name]) console.error('[ReactReduxFormGenerator]', `Unable to find creator of the validator for "${ name }" validation`);
+				if (typeof validators[name] !== 'function') console.error('[ReactReduxFormGenerator]', `Creator of the validator for "${ name }" validation is not a function`);
+				if (typeof validators[name]() !== 'function') console.error('[ReactReduxFormGenerator]', `Creator of the validator for "${ name }" does not return a function`);
 
 				const parsedArgs = args ? args[0].split(/,/).map(arg => JSON.parse(arg.replace(/'/igm, '"'))) : [];
 
 				return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[name].apply(this, parsedArgs);
 			}
 
-			if (!validators[validation]) throw new Error(`Unable to find validator for "${ validation }" validation`);
-			if (typeof validators[validation] !== 'function') throw new Error(`Validator for "${ validation }" validation is not a function`);
+			if (!validators[validation]) console.error('[ReactReduxFormGenerator]', `Unable to find validator for "${ validation }" validation`);
+			if (typeof validators[validation] !== 'function') console.error('[ReactReduxFormGenerator]', `Validator for "${ validation }" validation is not a function`);
 
 			return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[validation].bind(this);
 		});
@@ -260,8 +260,8 @@ export default class ReactReduxFormGenerator extends Component {
 
 		const { data, templates: { [type]: FieldRenderer }, Field } = this.props;
 
-		if (!FieldRenderer) throw new Error(`Unable to find renderer for "${ type }" field type`);
-		if (typeof FieldRenderer !== 'function') throw new Error(`Renderer for "${ type }" field type is not a function`);
+		if (!FieldRenderer) console.error('[ReactReduxFormGenerator]', `Unable to find renderer for "${ type }" field type`);
+		if (typeof FieldRenderer !== 'function') console.error('[ReactReduxFormGenerator]', `Renderer for "${ type }" field type is not a function`);
 
 		return (
 			<Field

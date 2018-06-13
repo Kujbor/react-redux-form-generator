@@ -8,6 +8,7 @@ import RadioField from './RadioField';
 import SelectField from './SelectField';
 import BlockWrapper from './BlockWrapper';
 import FieldWrapper from './FieldWrapper';
+// import ReactReduxFormGenerator from '../../';
 import ReactReduxFormGenerator from './ReactReduxFormGenerator';
 
 import schema from '../data/schema.json';
