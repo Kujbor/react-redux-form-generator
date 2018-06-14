@@ -1,5 +1,6 @@
 import { compose } from 'redux';
 import { Component } from 'react';
+import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
 
@@ -17,6 +18,16 @@ import values from '../data/values.json';
 import * as validators from '../utils/validators';
 
 export default class Demo extends Component {
+
+	static propTypes = {
+		form: propTypes.string.isRequired,
+		data: propTypes.object.isRequired
+	};
+
+	static defaultProps = {
+		form: '',
+		data: {}
+	};
 
 	state = {
 		savedValues: values,
@@ -77,7 +88,7 @@ export default class Demo extends Component {
 						field: FieldWrapper,
 						text: TextField,
 						date: TextField,
-						file: TextField,
+						files: TextField,
 						email: TextField,
 						phone: TextField,
 						static: TextField,
