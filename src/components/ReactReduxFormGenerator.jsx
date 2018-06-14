@@ -33,18 +33,28 @@ export default class ReactReduxFormGenerator extends Component {
 	};
 
 	componentWillMount = () => {
+
 		this.normaliseSchema();
+		this.handleValidate();
 	}
 
 	handleChange = ({ target: { name } }) => {
 
-		const { onChange, onValidate, data: { [name]: value } } = this.props;
-
 		setTimeout(() => {
 
+			this.handleValidate();
+
+			const { onChange, data: { [name]: value } } = this.props;
+
 			if (onChange) onChange(name, value);
-			if (onValidate) onValidate(this.getInvalidateFields());
 		});
+	}
+
+	handleValidate = () => {
+
+		const { onValidate } = this.props;
+
+		if (onValidate) onValidate(this.getInvalidateFields());
 	}
 
 	handleClick = ({ target: { value } }, field) => {

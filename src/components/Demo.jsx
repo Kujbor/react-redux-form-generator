@@ -53,7 +53,7 @@ export default class Demo extends Component {
 
 	render() {
 
-		const { savedValues, invalidateFields } = this.state;
+		const { data, savedValues, invalidateFields } = this.state;
 
 		log('Demo -> render', { ReactReduxFormGenerator, typeofReactReduxFormGenerator: typeof ReactReduxFormGenerator });
 
@@ -64,6 +64,7 @@ export default class Demo extends Component {
 				<ConnectedReactReduxFormGenerator
 					id='demo'
 					form='demo'
+					data={ data }
 					Field={ Field }
 					schema={ schema }
 					validators={ validators }
