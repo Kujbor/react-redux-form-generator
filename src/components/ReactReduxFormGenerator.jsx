@@ -35,26 +35,20 @@ export default class ReactReduxFormGenerator extends Component {
 	componentWillMount = () => {
 
 		this.normaliseSchema();
-		this.handleValidate();
+
+		setTimeout(() => this.updateValidations());
 	}
 
 	handleChange = ({ target: { name } }) => {
 
 		setTimeout(() => {
 
-			this.handleValidate();
+			this.updateValidations();
 
 			const { onChange, data: { [name]: value } } = this.props;
 
 			if (onChange) onChange(name, value);
 		});
-	}
-
-	handleValidate = () => {
-
-		const { onValidate } = this.props;
-
-		if (onValidate) onValidate(this.getInvalidateFields());
 	}
 
 	handleClick = ({ target: { value } }, field) => {
@@ -158,6 +152,13 @@ export default class ReactReduxFormGenerator extends Component {
 
 			break;
 		}
+	}
+
+	updateValidations = () => {
+
+		const { onValidate } = this.props;
+
+		if (onValidate) onValidate(this.getInvalidateFields());
 	}
 
 	isVisible = checker => {
