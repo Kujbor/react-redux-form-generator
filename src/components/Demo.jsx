@@ -40,7 +40,7 @@ export default class Demo extends Component {
 
 		log('Demo -> componentWillMount', { savedValues });
 
-		// if (savedValues) this.setState({ savedValues });
+		if (savedValues) this.setState({ savedValues });
 	}
 
 	handleChange = (name, value) => {
