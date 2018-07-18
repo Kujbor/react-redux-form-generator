@@ -7,6 +7,7 @@ import { reduxForm, Field } from 'redux-form';
 import TextField from './TextField';
 import RadioField from './RadioField';
 import SelectField from './SelectField';
+import ButtonsField from './ButtonsField';
 import BlockWrapper from './BlockWrapper';
 import FieldWrapper from './FieldWrapper';
 // import ReactReduxFormGenerator from '../../';
@@ -18,16 +19,6 @@ import values from '../data/values.json';
 import * as validators from '../utils/validators';
 
 export default class Demo extends Component {
-
-	static propTypes = {
-		form: propTypes.string.isRequired,
-		data: propTypes.object.isRequired
-	};
-
-	static defaultProps = {
-		form: '',
-		data: {}
-	};
 
 	state = {
 		savedValues: values,
@@ -64,9 +55,9 @@ export default class Demo extends Component {
 
 	render() {
 
-		const { data, savedValues, invalidateFields } = this.state;
+		const { savedValues, invalidateFields } = this.state;
 
-		log('Demo -> render', { ReactReduxFormGenerator, typeofReactReduxFormGenerator: typeof ReactReduxFormGenerator });
+		log('Demo -> render', { savedValues, invalidateFields });
 
 		return (
 			<div className='container d-flex flex-column justify-content-center h-100'>
@@ -75,7 +66,6 @@ export default class Demo extends Component {
 				<ConnectedReactReduxFormGenerator
 					id='demo'
 					form='demo'
-					data={ data }
 					Field={ Field }
 					schema={ schema }
 					validators={ validators }
@@ -83,7 +73,7 @@ export default class Demo extends Component {
 					onChange={ this.handleChange }
 					onSubmit={ this.handleSubmit }
 					onValidate={ this.handleValidate }
-					templates={{
+					templates={ {
 						block: BlockWrapper,
 						field: FieldWrapper,
 						text: TextField,
@@ -94,20 +84,29 @@ export default class Demo extends Component {
 						static: TextField,
 						radios: RadioField,
 						select: SelectField,
-						buttons: SelectField,
 						address: TextField,
+						buttons: ButtonsField,
 						turnover: SelectField,
 						regselect: SelectField
-					}}
+					} }
 				/>
-				<button
-					form='demo'
-					type='submit'
-					disabled={ invalidateFields.length }
-					className='btn btn-primary btn-lg'
-				>
-					Submit
-				</button>
+				<div className='btn-group'>
+					<button
+						form='demo'
+						type='submit'
+						className='btn btn-primary btn-lg'
+					>
+						Submit after valid
+					</button>
+					<button
+						form='demo'
+						type='submit'
+						disabled={ invalidateFields.length }
+						className='btn btn-secondary btn-lg'
+					>
+						Disabled while invalid
+					</button>
+				</div>
 			</div>
 		);
 	}

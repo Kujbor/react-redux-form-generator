@@ -47,22 +47,58 @@
 		"type": "select",
 		"options": [{
 			"label": "First",
-			"value": "1"
+			"value": "1",
+			"showIf": "data.radios_field === '1'"
 		}, {
 			"label": "Second",
-			"value": "2"
+			"value": "2",
+			"showIf": "data.radios_field === '2'"
 		}],
 		"validations": ["required"]
-	}, {
+	}]
+}, {
+	"fields": [{
+		"label": "Buttons Field with adding",
+		"name": "adding_fields-add_buttons_field",
+		"type": "buttons",
+		"add": true,
+		"options": [{
+			"label": "Hide",
+			"value": "no"
+		}, {
+			"label": "Add new",
+			"value": "adding_fields"
+		}],
+		"validations": ["required"]
+	}]
+}, {
+	"parent": "adding_fields",
+	"fields": [{
+		"label": "New Buttons Field with adding",
+		"name": "add_buttons_field",
+		"type": "buttons",
+		"add": true,
+		"options": [{
+			"label": "Hide",
+			"value": "no"
+		}, {
+			"label": "Add new",
+			"value": "adding_fields"
+		}],
+		"validations": ["required"]
+	}],
+	"showIf": "data['{ parent:previous }-add_buttons_field'] === 'adding_fields'"
+}, {
+	"fields": [{
 		"label": "Buttons Field",
 		"name": "buttons_field",
 		"type": "buttons",
 		"options": [{
-			"label": "First",
+			"label": "Yes",
 			"value": "1"
 		}, {
-			"label": "Second",
-			"value": "2"
+			"label": "No",
+			"value": "0"
 		}],
 		"validations": ["required"]
 	}, {

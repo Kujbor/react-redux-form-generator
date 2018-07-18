@@ -8,8 +8,8 @@ export default class ReactReduxFormGenerator extends Component {
 
 	static propTypes = {
 		id: propTypes.string,
-		form: propTypes.string.isRequired,
 		data: propTypes.object.isRequired,
+		Field: propTypes.func.isRequired,
 		schema: propTypes.array.isRequired,
 		children: propTypes.node,
 		onChange: propTypes.func,
@@ -23,7 +23,6 @@ export default class ReactReduxFormGenerator extends Component {
 
 	static defaultProps = {
 		id: null,
-		data: {},
 		children: null,
 		templates: {},
 		validators: {},
@@ -80,7 +79,7 @@ export default class ReactReduxFormGenerator extends Component {
 			const parentReplacer = () => `${ newBlock.parent }_${ newBlocksNumber }`;
 
 			const previousExp = new RegExp('{ parent:previous }', 'igm');
-			const previousReplacer = () => `${ newBlock.parent + (lastBlockNumber === null ? '' : `_${ lastBlockNumber }`) }`;
+			const previousReplacer = () => `${ newBlock.parent + (lastBlockNumber === null ? '' : '_' + lastBlockNumber) }`;
 
 			newBlock.showIf = newBlock.showIf && newBlock.showIf.replace(parentExp, parentReplacer);
 			newBlock.showIf = newBlock.showIf && newBlock.showIf.replace(previousExp, previousReplacer);
@@ -228,10 +227,7 @@ export default class ReactReduxFormGenerator extends Component {
 
 		if (parent && !created) return;
 		if (!this.isVisible(showIf, data)) return;
-
-		if (!fields.reduce((memo, field) => {
-			return memo || field.type !== 'hidden';
-		}, false)) return fields.map(field => this.renderWrapper(field));
+		if (!fields.reduce((memo, field) => memo || field.type !== 'hidden', false)) return fields.map(field => this.renderWrapper(field));
 
 		return (
 			<BlockWrapper
@@ -246,7 +242,7 @@ export default class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderWrapper = (field) => {
+	renderWrapper = field => {
 
 		const { data, templates: { field: FieldWrapper } } = this.props;
 		const { type, name, half, showIf } = field;
@@ -254,7 +250,7 @@ export default class ReactReduxFormGenerator extends Component {
 		if (!this.isVisible(showIf, data)) return;
 
 		if (type === 'hidden') return (
-			<div key={ name } className='fieldWrapperInvisible' style={{ display: 'none' }}>
+			<div key={ name } className='fieldWrapperInvisible' style={ { display: 'none' } }>
 				{ this.renderField(field) }
 			</div>
 		);
@@ -272,7 +268,7 @@ export default class ReactReduxFormGenerator extends Component {
 
 	renderField = ({ type, name, label, multiple, options, extra, validations }) => {
 
-		const { data, templates: { [type]: FieldRenderer }, Field } = this.props;
+		const { templates: { [type]: FieldRenderer }, Field } = this.props;
 
 		if (!FieldRenderer) throw new Error(`Unable to find renderer for '${ type }' field type`);
 		if (typeof FieldRenderer !== 'function') throw new Error(`Renderer for '${ type }' field type is not a function`);

@@ -55,4 +55,4 @@ export default class RadioField extends Component {
 			</div>
 		);
 	}
-};
+}
