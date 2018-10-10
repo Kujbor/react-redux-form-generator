@@ -15,7 +15,6 @@ export default class ReactReduxFormGenerator extends Component {
 		onChange: propTypes.func,
 		onSubmit: propTypes.func,
 		templates: propTypes.object,
-		onValidate: propTypes.func,
 		validators: propTypes.object,
 		handleSubmit: propTypes.func.isRequired,
 		initialValues: propTypes.object
@@ -34,20 +33,6 @@ export default class ReactReduxFormGenerator extends Component {
 	componentWillMount = () => {
 
 		this.normaliseSchema();
-
-		setTimeout(() => this.updateValidations());
-	}
-
-	handleChange = ({ target: { name } }) => {
-
-		setTimeout(() => {
-
-			this.updateValidations();
-
-			const { onChange, data: { [name]: value } } = this.props;
-
-			if (onChange) onChange(name, value);
-		});
 	}
 
 	handleClick = ({ target: { value } }, field) => {
@@ -79,7 +64,7 @@ export default class ReactReduxFormGenerator extends Component {
 			const parentReplacer = () => `${ newBlock.parent }_${ newBlocksNumber }`;
 
 			const previousExp = new RegExp('{ parent:previous }', 'igm');
-			const previousReplacer = () => `${ newBlock.parent + (lastBlockNumber === null ? '' : '_' + lastBlockNumber) }`;
+			const previousReplacer = () => `${ newBlock.parent + (lastBlockNumber === null ? '' : `_${ lastBlockNumber }`) }`;
 
 			newBlock.showIf = newBlock.showIf && newBlock.showIf.replace(parentExp, parentReplacer);
 			newBlock.showIf = newBlock.showIf && newBlock.showIf.replace(previousExp, previousReplacer);
@@ -128,36 +113,35 @@ export default class ReactReduxFormGenerator extends Component {
 
 		const { initialValues, schema } = this.props;
 
-		for (const name in initialValues) {
+		const fieldsNames = Object.keys(initialValues);
+
+		for (let i = 0; i < fieldsNames.length; i += 1) {
 
 			const isFieldExist = schema.reduce((memoBlock, block) =>
 				memoBlock || block.fields.reduce((memoField, field) =>
-					memoField || field.name === name, false), false);
+					memoField || field.name === fieldsNames[i], false), false);
 
-			if (isFieldExist) continue;
+			if (!isFieldExist) {
 
-			const blockName = name.split(/_[0-9]+-/)[0];
-			const fieldName = name.split(/_[0-9]+-/)[1];
+				const fieldNameParts = fieldsNames[i].split(/_[0-9]+-/);
 
-			const baseBlock = schema.reduce((memoBlock, block) =>
-				memoBlock || (block.parent === blockName ? block.fields.reduce((memoField, field) =>
-					memoField || field.name === fieldName, false) ? block : null : null), null);
+				const blockName = fieldNameParts[0];
+				const fieldName = fieldNameParts[1];
 
-			if (!baseBlock) continue;
+				const baseBlock = schema.reduce((memoBlock, block) =>
+					memoBlock || (block.parent === blockName ? block.fields.reduce((memoField, field) =>
+						memoField || field.name === fieldName, false) ? block : null : null), null);
 
-			this.addBlock(baseBlock.parent, true);
+				if (baseBlock) {
 
-			this.normaliseSchema();
+					this.addBlock(baseBlock.parent, true);
 
-			break;
+					this.normaliseSchema();
+
+					break;
+				}
+			}
 		}
-	}
-
-	updateValidations = () => {
-
-		const { onValidate } = this.props;
-
-		if (onValidate) onValidate(this.getInvalidateFields());
 	}
 
 	isVisible = checker => {
@@ -171,7 +155,7 @@ export default class ReactReduxFormGenerator extends Component {
 
 		const { data } = this.props;
 
-		return this.getFieldValidators(field.validations).reduce((memo, validator) => memo && !validator(data[field.name]), true);
+		return this.getFieldValidators(field.validations).reduce((memo, validator) => memo && !validator(data[field.name], data), true);
 	}
 
 	getInvalidateFields = () => this.getVisibleFields().filter(field => !this.isFieldValid(field))
@@ -199,10 +183,10 @@ export default class ReactReduxFormGenerator extends Component {
 
 			if (typeof validation !== 'string') throw new Error('Validation name must be a string');
 
-			if (validation.match(/\w+\([^\(\)]*\)/igm)) {
+			if (validation.match(/\w+\([^()]*\)/igm)) {
 
 				const name = validation.match(/^\w+/igm)[0];
-				const args = validation.match(/[^\(\)]+(?=\))/igm);
+				const args = validation.match(/[^()]+(?=\))/igm);
 
 				if (!validators[name]) throw new Error(`Unable to find creator of the validator for '${ name }' validation`);
 				if (typeof validators[name] !== 'function') throw new Error(`Creator of the validator for '${ name }' validation is not a function`);
@@ -210,13 +194,13 @@ export default class ReactReduxFormGenerator extends Component {
 
 				const parsedArgs = args ? args[0].split(/,/).map(arg => JSON.parse(arg.replace(/'/igm, '"'))) : [];
 
-				return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[name].apply(this, parsedArgs);
+				return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[name](...parsedArgs);
 			}
 
 			if (!validators[validation]) throw new Error(`Unable to find validator for '${ validation }' validation`);
 			if (typeof validators[validation] !== 'function') throw new Error(`Validator for '${ validation }' validation is not a function`);
 
-			return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[validation].bind(this);
+			return this.fieldValidatorsCasche[validation] ? this.fieldValidatorsCasche[validation] : this.fieldValidatorsCasche[validation] = validators[validation];
 		});
 	}
 
@@ -249,11 +233,14 @@ export default class ReactReduxFormGenerator extends Component {
 
 		if (!this.isVisible(showIf, data)) return;
 
-		if (type === 'hidden') return (
-			<div key={ name } className='fieldWrapperInvisible' style={ { display: 'none' } }>
-				{ this.renderField(field) }
-			</div>
-		);
+		if (type === 'hidden') {
+
+			return (
+				<div key={ name } className='fieldWrapperInvisible' style={ { display: 'none' } }>
+					{ this.renderField(field) }
+				</div>
+			);
+		}
 
 		return (
 			<FieldWrapper
@@ -281,8 +268,6 @@ export default class ReactReduxFormGenerator extends Component {
 				extra={ extra }
 				multiple={ multiple }
 				component={ FieldRenderer }
-				onBlur={ this.handleChange }
-				onChange={ this.handleChange }
 				options={ this.getVisibleOptions(options) }
 				validate={ this.getFieldValidators(validations) }
 			/>

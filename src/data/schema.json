@@ -10,15 +10,15 @@
 		"type": "date",
 		"validations": ["required"]
 	}, {
-		"label": "Files Field",
-		"name": "files_field",
-		"type": "files",
+		"label": "File Field",
+		"name": "file_field",
+		"type": "file",
 		"validations": ["required"]
 	}, {
 		"label": "Email Field",
 		"name": "email_field",
 		"type": "email",
-		"validations": ["required"]
+		"validations": ["required", "email"]
 	}, {
 		"label": "Phone Field",
 		"name": "phone_field",
