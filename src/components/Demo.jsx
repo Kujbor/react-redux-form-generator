@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { Component } from 'react';
 
-// import ReactReduxFormGenerator from '../../';
 import ReactReduxFormGeneratorWrapper from './ReactReduxFormGeneratorWrapper';
 
 import formSchema from '../data/schema.json';

@@ -8,11 +8,10 @@ export default class ReactReduxFormGenerator extends Component {
 
 	static propTypes = {
 		id: propTypes.string,
-		data: propTypes.object.isRequired,
+		data: propTypes.object,
 		Field: propTypes.func.isRequired,
-		schema: propTypes.array.isRequired,
+		schema: propTypes.array,
 		children: propTypes.node,
-		onChange: propTypes.func,
 		onSubmit: propTypes.func,
 		templates: propTypes.object,
 		validators: propTypes.object,
@@ -22,10 +21,11 @@ export default class ReactReduxFormGenerator extends Component {
 
 	static defaultProps = {
 		id: null,
+		data: {},
+		schema: [],
 		children: null,
 		templates: {},
 		validators: {},
-		onChange: null,
 		initialValues: {},
 		onSubmit: () => {}
 	};
