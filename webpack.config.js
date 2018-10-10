@@ -52,8 +52,8 @@ module.exports = {
 	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
 		new webpack.ProvidePlugin({
-			React: 'react',
-			log: 'log'
+			log: 'log',
+			React: 'react'
 		}),
 		new webpack.DefinePlugin(_.mapValues(options, value => JSON.stringify(value)))
 	],

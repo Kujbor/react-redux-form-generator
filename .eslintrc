@@ -41,6 +41,10 @@
     "object-curly-newline": 0,
     "consistent-return": 0
   },
+  "globals": {
+    "_": true,
+    "log": true
+  },
   "env": {
     "browser": true,
     "es6": true,
