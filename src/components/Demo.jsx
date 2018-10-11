@@ -10,7 +10,7 @@ export default class Demo extends Component {
 
 	state = {
 		savedValues: initialValues,
-		invalidateFields: []
+		invalidateFields: {}
 	}
 
 	componentWillMount() {

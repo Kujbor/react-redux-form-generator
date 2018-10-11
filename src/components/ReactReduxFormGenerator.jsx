@@ -33,6 +33,14 @@ export default class ReactReduxFormGenerator extends Component {
 	componentWillMount = () => {
 
 		this.normaliseSchema();
+		this.updateSchemaKeys();
+	}
+
+	componentWillReceiveProps = ({ schema: nextSchema }) => {
+
+		const { schema: prevSchema } = this.props;
+
+		if (nextSchema !== prevSchema) this.updateSchemaKeys();
 	}
 
 	handleClick = ({ target: { value } }, field) => {
@@ -102,6 +110,7 @@ export default class ReactReduxFormGenerator extends Component {
 			});
 
 			newBlock.created = true;
+			newBlock.key = this.getRandomHash();
 
 			schema.splice(lastBlockIndex + 1, 0, newBlock);
 		});
@@ -142,6 +151,15 @@ export default class ReactReduxFormGenerator extends Component {
 				}
 			}
 		}
+	}
+
+	updateSchemaKeys = () => {
+
+		const { schema } = this.props;
+
+		schema.forEach(block => {
+			if (!block.key) Object.assign(block, { key: this.getRandomHash() });
+		});
 	}
 
 	isVisible = checker => {
@@ -204,7 +222,9 @@ export default class ReactReduxFormGenerator extends Component {
 		});
 	}
 
-	renderBlock = (block, index) => {
+	getRandomHash = () => Math.random();
+
+	renderBlock = block => {
 
 		const { data, templates: { block: BlockWrapper } } = this.props;
 		const { title, caption, fields, parent, created, showIf } = block;
@@ -215,11 +235,12 @@ export default class ReactReduxFormGenerator extends Component {
 
 		return (
 			<BlockWrapper
-				id={ index }
-				key={ index }
+				key={ block.key }
 				title={ title }
+				block={ block }
 				fields={ fields }
 				caption={ caption }
+				generator={ this }
 			>
 				{ fields.map(field => this.renderWrapper(field)) }
 			</BlockWrapper>
@@ -246,6 +267,8 @@ export default class ReactReduxFormGenerator extends Component {
 			<FieldWrapper
 				key={ name }
 				half={ half }
+				field={ field }
+				generator={ this }
 				onClick={ event => this.handleClick(event, field) }
 			>
 				{ this.renderField(field) }
@@ -253,8 +276,9 @@ export default class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderField = ({ type, name, label, multiple, options, extra, validations }) => {
+	renderField = field => {
 
+		const { type, name, label, multiple, options, validations, extra } = field;
 		const { templates: { [type]: FieldRenderer }, Field } = this.props;
 
 		if (!FieldRenderer) throw new Error(`Unable to find renderer for '${ type }' field type`);
@@ -264,12 +288,14 @@ export default class ReactReduxFormGenerator extends Component {
 			<Field
 				type={ type }
 				name={ name }
-				label={ label }
-				extra={ extra }
-				multiple={ multiple }
-				component={ FieldRenderer }
+				field={ field }
+				label={ label || '' }
+				extra={ extra || {} }
 				options={ this.getVisibleOptions(options) }
 				validate={ this.getFieldValidators(validations) }
+				multiple={ multiple }
+				generator={ this }
+				component={ FieldRenderer }
 			/>
 		);
 	}
@@ -284,9 +310,11 @@ export default class ReactReduxFormGenerator extends Component {
 			handleSubmit
 		} = this.props;
 
+		// log('ReactReduxFormGenerator -> render', { schema });
+
 		return (
 			<form id={ id } onSubmit={ handleSubmit(onSubmit) }>
-				{ schema.map((block, index) => this.renderBlock(block, index)) }
+				{ schema.map(block => this.renderBlock(block)) }
 				{ children }
 			</form>
 		);

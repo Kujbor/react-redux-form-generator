@@ -23,7 +23,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 		id: propTypes.string,
 		form: propTypes.string.isRequired,
 		schema: propTypes.array.isRequired,
-		errors: propTypes.object.isRequired,
+		errors: propTypes.object,
 		children: propTypes.node,
 		onChange: propTypes.func,
 		onSubmit: propTypes.func,
@@ -33,6 +33,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 
 	static defaultProps = {
 		id: null,
+		errors: {},
 		children: null,
 		initialValues: {},
 		onSubmit: () => {}

@@ -11,20 +11,16 @@ export default class TextField extends Component {
 		type: propTypes.string.isRequired,
 		meta: propTypes.object.isRequired,
 		input: propTypes.object.isRequired,
-		label: propTypes.string,
-		extra: propTypes.object
-	};
-
-	static defaultProps = {
-		label: '',
-		extra: {}
+		label: propTypes.string.isRequired,
+		extra: propTypes.object.isRequired,
+		generator: propTypes.object.isRequired
 	};
 
 	render() {
 
-		const { type, meta, input, label, extra } = this.props;
+		const { type, meta, input, label, extra, generator: { props: generatorProps } } = this.props;
 
-		log('TextField -> render', { type, meta, input, label, extra });
+		log('TextField -> render', { type, meta, input, label, extra, generatorProps });
 
 		return (
 			<div className='form-group row'>

@@ -12,9 +12,8 @@ export default class InvalidFeedback extends Component {
 		const { meta } = this.props;
 
 		return (
-			<div className='invalid-feedback' style={{ display: 'block' }}>
+			<div className='invalid-feedback' style={ { display: 'block' } }>
 				{ meta && meta.touched && meta.error }
-				{ meta && meta.touched && meta.warning }
 			</div>
 		);
 	}

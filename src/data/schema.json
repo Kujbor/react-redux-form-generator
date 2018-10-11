@@ -10,11 +10,6 @@
 		"type": "date",
 		"validations": ["required"]
 	}, {
-		"label": "File Field",
-		"name": "file_field",
-		"type": "file",
-		"validations": ["required"]
-	}, {
 		"label": "Email Field",
 		"name": "email_field",
 		"type": "email",
@@ -54,6 +49,11 @@
 			"value": "2",
 			"showIf": "data.radios_field === '2'"
 		}],
+		"validations": ["required"]
+	}, {
+		"label": "File Field",
+		"name": "file_field",
+		"type": "file",
 		"validations": ["required"]
 	}]
 }, {
