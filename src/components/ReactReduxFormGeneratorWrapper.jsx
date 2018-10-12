@@ -24,6 +24,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 		form: propTypes.string.isRequired,
 		schema: propTypes.array.isRequired,
 		errors: propTypes.object,
+		context: propTypes.object,
 		children: propTypes.node,
 		onChange: propTypes.func,
 		onSubmit: propTypes.func,
@@ -54,6 +55,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 			id,
 			form,
 			schema,
+			context,
 			children,
 			onChange,
 			onSubmit,
@@ -66,6 +68,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 				form={ form }
 				Field={ Field }
 				schema={ schema }
+				context={ context }
 				validators={ validators }
 				initialValues={ initialValues }
 				onChange={ onChange }

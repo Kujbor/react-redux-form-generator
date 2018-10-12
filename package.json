@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form-generator",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Forms generator by JSON-schemas for react/redux",
   "main": "./dist/react-redux-form-generator.js",
   "scripts": {

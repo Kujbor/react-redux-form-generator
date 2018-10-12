@@ -12,6 +12,7 @@ export default class ReactReduxFormGenerator extends Component {
 		Field: propTypes.func.isRequired,
 		schema: propTypes.array,
 		children: propTypes.node,
+		context: propTypes.object,
 		onSubmit: propTypes.func,
 		templates: propTypes.object,
 		validators: propTypes.object,
@@ -226,8 +227,8 @@ export default class ReactReduxFormGenerator extends Component {
 
 	renderBlock = block => {
 
-		const { data, templates: { block: BlockWrapper } } = this.props;
 		const { title, caption, fields, parent, created, showIf } = block;
+		const { data, templates: { block: BlockWrapper }, context } = this.props;
 
 		if (parent && !created) return;
 		if (!this.isVisible(showIf, data)) return;
@@ -240,6 +241,7 @@ export default class ReactReduxFormGenerator extends Component {
 				block={ block }
 				fields={ fields }
 				caption={ caption }
+				context={ context }
 				generator={ this }
 			>
 				{ fields.map(field => this.renderWrapper(field)) }
@@ -249,8 +251,8 @@ export default class ReactReduxFormGenerator extends Component {
 
 	renderWrapper = field => {
 
-		const { data, templates: { field: FieldWrapper } } = this.props;
 		const { type, name, half, showIf } = field;
+		const { data, templates: { field: FieldWrapper }, context } = this.props;
 
 		if (!this.isVisible(showIf, data)) return;
 
@@ -268,6 +270,7 @@ export default class ReactReduxFormGenerator extends Component {
 				key={ name }
 				half={ half }
 				field={ field }
+				context={ context }
 				generator={ this }
 				onClick={ event => this.handleClick(event, field) }
 			>
@@ -279,7 +282,7 @@ export default class ReactReduxFormGenerator extends Component {
 	renderField = field => {
 
 		const { type, name, label, multiple, options, validations, extra } = field;
-		const { templates: { [type]: FieldRenderer }, Field } = this.props;
+		const { templates: { [type]: FieldRenderer }, Field, context } = this.props;
 
 		if (!FieldRenderer) throw new Error(`Unable to find renderer for '${ type }' field type`);
 		if (typeof FieldRenderer !== 'function') throw new Error(`Renderer for '${ type }' field type is not a function`);
@@ -291,6 +294,7 @@ export default class ReactReduxFormGenerator extends Component {
 				field={ field }
 				label={ label || '' }
 				extra={ extra || {} }
+				context={ context }
 				options={ this.getVisibleOptions(options) }
 				validate={ this.getFieldValidators(validations) }
 				multiple={ multiple }
