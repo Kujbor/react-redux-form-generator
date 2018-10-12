@@ -223,7 +223,7 @@ export default class ReactReduxFormGenerator extends Component {
 		});
 	}
 
-	getRandomHash = () => Math.random();
+	getRandomHash = () => Math.random().toString().substring(2);
 
 	renderBlock = block => {
 
