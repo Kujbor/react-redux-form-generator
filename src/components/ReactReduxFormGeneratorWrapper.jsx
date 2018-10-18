@@ -23,6 +23,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 		id: propTypes.string,
 		form: propTypes.string.isRequired,
 		schema: propTypes.array.isRequired,
+		data: propTypes.object,
 		errors: propTypes.object,
 		context: propTypes.object,
 		children: propTypes.node,
@@ -34,19 +35,23 @@ class ReactReduxFormGeneratorWrapper extends Component {
 
 	static defaultProps = {
 		id: null,
+		data: {},
 		errors: {},
 		children: null,
 		initialValues: {},
-		onSubmit: () => {}
+		onChange: () => {},
+		onSubmit: () => {},
+		onValidate: () => {}
 	};
 
-	componentWillReceiveProps({ errors: newErrors }) {
+	componentWillReceiveProps({ data: nextData, errors: nextErrors }) {
 
-		const { onValidate, errors: oldErrors } = this.props;
+		const { onChange, data: prevData, onValidate, errors: prevErrors } = this.props;
 
-		log('ReactReduxFormGeneratorWrapper -> componentWillReceiveProps', { newErrors, oldErrors });
+		log('ReactReduxFormGeneratorWrapper -> componentWillReceiveProps', { onValidate });
 
-		if (!_.isEqual(newErrors, oldErrors)) onValidate(newErrors);
+		if (!_.isEqual(nextData, prevData)) onChange(nextErrors);
+		if (!_.isEqual(nextErrors, prevErrors)) onValidate(nextErrors);
 	}
 
 	render() {
@@ -61,6 +66,8 @@ class ReactReduxFormGeneratorWrapper extends Component {
 			onSubmit,
 			initialValues
 		} = this.props;
+
+		log('ReactReduxFormGeneratorWrapper -> render', { schema });
 
 		return (
 			<ConnectedReactReduxFormGenerator
@@ -103,8 +110,9 @@ const mapStateToFormGeneratorProps = (state, { form: formName }) => ({
 
 const ConnectedReactReduxFormGenerator = compose(connect(mapStateToFormGeneratorProps), reduxForm({ enableReinitialize: true }))(ReactReduxFormGenerator);
 
-const mapStateToGeneratorWrapperProps = (state, { form: formName }) => ({
-	errors: getFormSyncErrors(formName)(state)
+const mapStateToGeneratorWrapperProps = (state, { form }) => ({
+	data: getFormValues(form)(state),
+	errors: getFormSyncErrors(form)(state)
 });
 
 export default connect(mapStateToGeneratorWrapperProps)(ReactReduxFormGeneratorWrapper);
