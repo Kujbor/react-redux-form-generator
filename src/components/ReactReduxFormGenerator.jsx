@@ -33,15 +33,17 @@ export default class ReactReduxFormGenerator extends Component {
 
 	componentWillMount = () => {
 
+		const { schema } = this.props;
+
 		this.normaliseSchema();
-		this.updateSchemaKeys();
+		this.updateSchemaKeys(schema);
 	}
 
 	componentWillReceiveProps = ({ schema: nextSchema }) => {
 
 		const { schema: prevSchema } = this.props;
 
-		if (nextSchema !== prevSchema) this.updateSchemaKeys();
+		if (nextSchema !== prevSchema) this.updateSchemaKeys(nextSchema);
 	}
 
 	handleClick = ({ target: { value } }, field) => {
@@ -154,9 +156,7 @@ export default class ReactReduxFormGenerator extends Component {
 		}
 	}
 
-	updateSchemaKeys = () => {
-
-		const { schema } = this.props;
+	updateSchemaKeys = schema => {
 
 		schema.forEach(block => {
 			if (!block.key) Object.assign(block, { key: this.getRandomHash() });
