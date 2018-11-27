@@ -165,9 +165,9 @@ export default class ReactReduxFormGenerator extends Component {
 
 	isVisible = checker => {
 
-		const { data } = this.props;
+		const { data, context } = this.props;
 
-		return !checker || (data && new Function('data', `return ${ checker };`).call(this, data));
+		return !checker || (data && new Function('data', 'context', `return ${ checker };`).call(this, data, context));
 	}
 
 	isFieldValid = field => {

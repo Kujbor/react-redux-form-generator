@@ -55,6 +55,7 @@ export default class Demo extends Component {
 					id='demo'
 					form='demo'
 					schema={ formSchema }
+					context={ this }
 					initialValues={ savedValues }
 					onChange={ this.handleChange }
 					onSubmit={ this.handleSubmit }
