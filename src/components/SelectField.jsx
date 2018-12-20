@@ -26,11 +26,11 @@ export default class SelectField extends Component {
 
 	render() {
 
-		const { type, meta, input, label, multiple, options, extra } = this.props;
+		const { meta, input, label, multiple, options, extra } = this.props;
 
 		options.forEach(option => option.label = option.label || option.value);
 
-		log('SelectField -> render', { type, meta, input, label, options, multiple, extra });
+		// log('SelectField -> render', { meta, input, label, options, multiple, extra });
 
 		return (
 			<div className='form-group row'>

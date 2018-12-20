@@ -17,7 +17,7 @@ export default class Demo extends Component {
 
 		const savedValues = JSON.parse(localStorage.getItem('demo'));
 
-		log('Demo -> componentWillMount', { savedValues });
+		// log('Demo -> componentWillMount', { savedValues });
 
 		if (savedValues) this.setState({ savedValues });
 	}
@@ -29,14 +29,14 @@ export default class Demo extends Component {
 
 	handleSubmit = values => {
 
-		log('Demo -> handleSubmit', { values });
+		// log('Demo -> handleSubmit', { values });
 
 		localStorage.setItem('demo', JSON.stringify(values));
 	}
 
 	handleValidate = invalidateFields => {
 
-		log('Demo -> handleValidate', { invalidateFields });
+		// log('Demo -> handleValidate', { invalidateFields });
 
 		this.setState({ invalidateFields });
 	}
@@ -45,7 +45,7 @@ export default class Demo extends Component {
 
 		const { savedValues, invalidateFields } = this.state;
 
-		log('Demo -> render', { savedValues, invalidateFields });
+		// log('Demo -> render', { savedValues, invalidateFields });
 
 		return (
 			<div className='container d-flex flex-column justify-content-center h-100'>

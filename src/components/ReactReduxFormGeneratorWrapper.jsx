@@ -48,7 +48,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 
 		const { onChange, data: prevData, onValidate, errors: prevErrors } = this.props;
 
-		log('ReactReduxFormGeneratorWrapper -> componentWillReceiveProps', { onValidate });
+		// log('ReactReduxFormGeneratorWrapper -> componentWillReceiveProps', { onValidate });
 
 		if (!_.isEqual(nextData, prevData)) onChange(nextErrors);
 		if (!_.isEqual(nextErrors, prevErrors)) onValidate(nextErrors);
@@ -67,7 +67,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 			initialValues
 		} = this.props;
 
-		log('ReactReduxFormGeneratorWrapper -> render', { schema });
+		// log('ReactReduxFormGeneratorWrapper -> render', { schema });
 
 		return (
 			<ConnectedReactReduxFormGenerator

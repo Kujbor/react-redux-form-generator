@@ -4,7 +4,6 @@ import classNames from 'classnames';
 
 import FormLabel from './FormLabel';
 import InvalidFeedback from './InvalidFeedback';
-import inputClassNames from '../utils/inputClassNames';
 
 export default class ButtonsField extends Component {
 
@@ -47,11 +46,11 @@ export default class ButtonsField extends Component {
 
 	render() {
 
-		const { type, meta, input, label, options } = this.props;
+		const { meta, input, label, options } = this.props;
 
 		options.forEach(option => option.label = option.label || option.value);
 
-		log('ButtonsField -> render', { type, meta, input, label, options });
+		// log('ButtonsField -> render', { meta, input, label, options });
 
 		return (
 			<div className='form-group row'>

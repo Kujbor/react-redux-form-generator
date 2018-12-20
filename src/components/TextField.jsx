@@ -20,7 +20,7 @@ export default class TextField extends Component {
 
 		const { type, meta, input, label, extra, generator: { props: generatorProps } } = this.props;
 
-		log('TextField -> render', { type, meta, input, label, extra, generatorProps });
+		// log('TextField -> render', { type, meta, input, label, extra, generatorProps });
 
 		return (
 			<div className='form-group row'>

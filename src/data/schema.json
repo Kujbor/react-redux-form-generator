@@ -121,7 +121,6 @@
 		"options": [{
 			"value": "test"
 		}],
-		"validations": ["required"],
-		"showIf": "console.info('%c[ schema -> regselect_field -> showIf ]', 'background: blue; color: white;', { data: data, this: this, context: context })"
+		"validations": ["required"]
 	}]
 }]

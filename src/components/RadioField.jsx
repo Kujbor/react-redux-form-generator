@@ -28,7 +28,7 @@ export default class RadioField extends Component {
 
 		options.forEach(option => option.label = option.label || option.value);
 
-		log('RadioField -> render', { type, meta, input, label, options, extra });
+		// log('RadioField -> render', { type, meta, input, label, options, extra });
 
 		return (
 			<div className='form-group row'>

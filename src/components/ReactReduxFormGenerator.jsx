@@ -170,25 +170,26 @@ export default class ReactReduxFormGenerator extends Component {
 		return !checker || (data && new Function('data', 'context', `return ${ checker };`).call(this, data, context));
 	}
 
-	isFieldValid = field => {
+	// isFieldValid = field => {
 
-		const { data } = this.props;
+	// 	const { data } = this.props;
 
-		return this.getFieldValidators(field.validations).reduce((memo, validator) => memo && !validator(data[field.name], data), true);
-	}
+	// 	return this.getFieldValidators(field.validations).reduce((memo, validator) => memo && !validator(data[field.name], data), true);
+	// }
 
-	getInvalidateFields = () => this.getVisibleFields().filter(field => !this.isFieldValid(field))
+	// getInvalidateFields = () => this.getVisibleFields().filter(field => !this.isFieldValid(field))
 
-	getAllVisible = () => {
+	// getAllVisible = () => {
 
-		const { schema } = this.props;
+	// 	const { schema } = this.props;
 
-		return schema.filter(block => this.isVisible(block.showIf)).map(block => Object.assign({}, block, {
-			fields: block.fields.filter(field => this.isVisible(field.showIf))
-		})).filter(block => block.fields.length);
-	}
+	// 	return schema.filter(block => this.isVisible(block.showIf)).map(block => ({
+	// 		...block,
+	// 		fields: block.fields.filter(field => this.isVisible(field.showIf))
+	// 	})).filter(block => block.fields.length);
+	// }
 
-	getVisibleFields = () => this.getAllVisible().reduce((memo, block) => memo.concat(block.fields), [])
+	// getVisibleFields = () => this.getAllVisible().reduce((memo, block) => memo.concat(block.fields), [])
 
 	getVisibleOptions = (options = []) => options.filter(option => this.isVisible(option.showIf))
 
