@@ -33,18 +33,18 @@ export default class ReactReduxFormGenerator extends Component {
 
 	componentWillMount = () => {
 
-		const { schema } = this.props;
+		// const { schema } = this.props;
 
 		this.normaliseSchema();
-		this.updateSchemaKeys(schema);
+		// this.updateSchemaKeys(schema);
 	}
 
-	componentWillReceiveProps = ({ schema: nextSchema }) => {
+	// componentWillReceiveProps = ({ schema: nextSchema }) => {
 
-		const { schema: prevSchema } = this.props;
+	// 	const { schema: prevSchema } = this.props;
 
-		if (nextSchema !== prevSchema) this.updateSchemaKeys(nextSchema);
-	}
+	// 	if (nextSchema !== prevSchema) this.updateSchemaKeys(nextSchema);
+	// }
 
 	handleClick = ({ target: { value } }, field) => {
 		if (field.add && value && value !== 'no') this.addBlock(value);
@@ -156,12 +156,12 @@ export default class ReactReduxFormGenerator extends Component {
 		}
 	}
 
-	updateSchemaKeys = schema => {
+	// updateSchemaKeys = schema => {
 
-		schema.forEach(block => {
-			if (!block.key) Object.assign(block, { key: this.getRandomHash() });
-		});
-	}
+	// 	schema.forEach(block => {
+	// 		if (!block.key) Object.assign(block, { key: this.getRandomHash() });
+	// 	});
+	// }
 
 	isVisible = checker => {
 

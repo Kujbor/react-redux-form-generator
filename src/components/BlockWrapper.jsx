@@ -16,4 +16,4 @@ export default class BlockWrapper extends Component {
 			</div>
 		);
 	}
-};
+}
