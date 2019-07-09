@@ -14,8 +14,8 @@ import FieldWrapper from './FieldWrapper';
 
 import * as validators from '../utils/validators';
 
-// import ReactReduxFormGenerator from '../../';
-import ReactReduxFormGenerator from './ReactReduxFormGenerator';
+import ReactReduxFormGenerator from '../../';
+// import ReactReduxFormGenerator from './ReactReduxFormGenerator';
 
 class ReactReduxFormGeneratorWrapper extends Component {
 

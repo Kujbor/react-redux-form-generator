@@ -1,4 +1,5 @@
 [{
+	"key": "simple-fields",
 	"fields": [{
 		"label": "Text Field",
 		"name": "text_field",
@@ -43,11 +44,11 @@
 		"options": [{
 			"label": "First",
 			"value": "1",
-			"showIf": "data.radios_field === '1'"
+			"showIf": "data.radios_field !== '2'"
 		}, {
 			"label": "Second",
 			"value": "2",
-			"showIf": "data.radios_field === '2'"
+			"showIf": "data.radios_field !== '1'"
 		}],
 		"validations": ["required"]
 	}, {
@@ -57,6 +58,7 @@
 		"validations": ["required"]
 	}]
 }, {
+	"key": "reproducing-fields",
 	"fields": [{
 		"label": "Buttons Field with adding",
 		"name": "adding_fields-add_buttons_field",
@@ -72,6 +74,7 @@
 		"validations": ["required"]
 	}]
 }, {
+	"key": "reproducible-fields",
 	"parent": "adding_fields",
 	"fields": [{
 		"label": "New Buttons Field with adding",
@@ -89,6 +92,7 @@
 	}],
 	"showIf": "data['{ parent:previous }-add_buttons_field'] === 'adding_fields'"
 }, {
+	"key": "custom-fields",
 	"fields": [{
 		"label": "Buttons Field",
 		"name": "buttons_field",

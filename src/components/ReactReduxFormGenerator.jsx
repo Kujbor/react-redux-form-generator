@@ -286,7 +286,7 @@ export default class ReactReduxFormGenerator extends Component {
 		const { templates: { [type]: FieldRenderer }, Field, context } = this.props;
 
 		if (!FieldRenderer) throw new Error(`Unable to find renderer for '${ type }' field type`);
-		if (typeof FieldRenderer !== 'function') throw new Error(`Renderer for '${ type }' field type is not a function`);
+		if (typeof FieldRenderer !== 'function' && !(typeof FieldRenderer === 'object' && FieldRenderer.$$typeof)) throw new Error(`Renderer for '${ type }' field type is not a function`);
 
 		return (
 			<Field
