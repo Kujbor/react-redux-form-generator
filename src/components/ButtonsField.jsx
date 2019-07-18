@@ -1,11 +1,11 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import propTypes from 'prop-types';
 import classNames from 'classnames';
 
 import FormLabel from './FormLabel';
 import InvalidFeedback from './InvalidFeedback';
 
-export default class ButtonsField extends Component {
+export default class ButtonsField extends PureComponent {
 
 	static propTypes = {
 		meta: propTypes.object.isRequired,

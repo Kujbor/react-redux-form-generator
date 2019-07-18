@@ -1,12 +1,12 @@
 import _ from 'lodash';
-import { Component } from 'react';
+import { PureComponent } from 'react';
 
 import ReactReduxFormGeneratorWrapper from './ReactReduxFormGeneratorWrapper';
 
 import formSchema from '../data/schema.json';
 import initialValues from '../data/values.json';
 
-export default class Demo extends Component {
+export default class Demo extends PureComponent {
 
 	state = {
 		savedValues: initialValues,

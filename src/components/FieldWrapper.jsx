@@ -1,6 +1,6 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 
-export default class FieldWrapper extends Component {
+export default class FieldWrapper extends PureComponent {
 
 	render() {
 

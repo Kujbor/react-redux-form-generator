@@ -1,11 +1,11 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import propTypes from 'prop-types';
 
 import FormLabel from './FormLabel';
 import InvalidFeedback from './InvalidFeedback';
 import inputClassNames from '../utils/inputClassNames';
 
-export default class RadioField extends Component {
+export default class RadioField extends PureComponent {
 
 	static propTypes = {
 		type: propTypes.string.isRequired,

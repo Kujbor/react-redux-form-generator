@@ -1,7 +1,7 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import propTypes from 'prop-types';
 
-export default class InvalidFeedback extends Component {
+export default class InvalidFeedback extends PureComponent {
 
 	static propTypes = {
 		meta: propTypes.object.isRequired

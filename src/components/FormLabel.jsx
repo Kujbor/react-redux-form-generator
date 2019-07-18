@@ -1,8 +1,8 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import propTypes from 'prop-types';
 import classNames from 'classnames';
 
-export default class FormLabel extends Component {
+export default class FormLabel extends PureComponent {
 
 	static propTypes = {
 		meta: propTypes.object.isRequired,

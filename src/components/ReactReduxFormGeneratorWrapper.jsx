@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { compose } from 'redux';
-import { Component } from 'react';
+import { PureComponent } from 'react';
 import propTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { reduxForm, Field, getFormValues, getFormSyncErrors } from 'redux-form';
@@ -14,10 +14,10 @@ import FieldWrapper from './FieldWrapper';
 
 import * as validators from '../utils/validators';
 
-import ReactReduxFormGenerator from '../../';
-// import ReactReduxFormGenerator from './ReactReduxFormGenerator';
+// import ReactReduxFormGenerator from '../../';
+import ReactReduxFormGenerator from './ReactReduxFormGenerator';
 
-class ReactReduxFormGeneratorWrapper extends Component {
+class ReactReduxFormGeneratorWrapper extends PureComponent {
 
 	static propTypes = {
 		id: propTypes.string,
@@ -31,7 +31,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 		onSubmit: propTypes.func,
 		onValidate: propTypes.func,
 		initialValues: propTypes.object
-	};
+	}
 
 	static defaultProps = {
 		id: null,
@@ -42,7 +42,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 		onChange: () => {},
 		onSubmit: () => {},
 		onValidate: () => {}
-	};
+	}
 
 	componentWillReceiveProps({ data: nextData, errors: nextErrors }) {
 
@@ -94,7 +94,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
 					address: TextField,
 					buttons: ButtonsField,
 					turnover: SelectField,
-					regselect: SelectField
+					regselect: SelectField,
 				} }
 			>
 				{ children }
