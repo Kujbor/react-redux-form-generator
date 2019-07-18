@@ -1,23 +1,42 @@
-import { Component } from 'react';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
+import { PureComponent } from 'react';
 
-if (!Component) throw new Error('Unable to load \'react\'');
-if (!propTypes) throw new Error('Unable to load \'propTypes\'');
+if (!PureComponent) throw new Error('Unable to load \'react\'');
+if (!PropTypes) throw new Error('Unable to load \'PropTypes\'');
 
-export default class ReactReduxFormGenerator extends Component {
+const noop = () => {};
+
+export default class ReactReduxFormGenerator extends PureComponent {
 
 	static propTypes = {
-		id: propTypes.string,
-		data: propTypes.object,
-		Field: propTypes.func.isRequired,
-		schema: propTypes.array,
-		children: propTypes.node,
-		context: propTypes.object,
-		onSubmit: propTypes.func,
-		templates: propTypes.object,
-		validators: propTypes.object,
-		handleSubmit: propTypes.func.isRequired,
-		initialValues: propTypes.object
+		id: PropTypes.string,
+		data: PropTypes.objectOf(PropTypes.string),
+		Field: PropTypes.func.isRequired,
+		schema: PropTypes.arrayOf(PropTypes.shape({
+			key: PropTypes.string.isRequired,
+			fields: PropTypes.arrayOf(PropTypes.shape({
+				name: PropTypes.string.isRequired,
+				type: PropTypes.string.isRequired,
+				label: PropTypes.string,
+				multiple: PropTypes.bool,
+				options: PropTypes.arrayOf(PropTypes.object),
+				extra: PropTypes.object,
+				validations: PropTypes.arrayOf(PropTypes.string),
+			})).isRequired,
+		})).isRequired,
+		children: PropTypes.node,
+		context: PropTypes.objectOf(PropTypes.any),
+		onSubmit: PropTypes.func,
+		templates: PropTypes.objectOf(PropTypes.oneOfType([
+			PropTypes.node,
+			PropTypes.func,
+			PropTypes.shape({
+				$$typeof: PropTypes.symbol,
+			}),
+		])),
+		validators: PropTypes.objectOf(PropTypes.func),
+		handleSubmit: PropTypes.func.isRequired,
+		initialValues: PropTypes.objectOf(PropTypes.string),
 	};
 
 	static defaultProps = {
@@ -28,7 +47,7 @@ export default class ReactReduxFormGenerator extends Component {
 		templates: {},
 		validators: {},
 		initialValues: {},
-		onSubmit: () => {}
+		onSubmit: noop,
 	};
 
 	componentWillMount = () => {
@@ -245,12 +264,12 @@ export default class ReactReduxFormGenerator extends Component {
 				context={ context }
 				generator={ this }
 			>
-				{ fields.map(field => this.renderWrapper(field)) }
+				{ fields.map(field => this.renderWrapper(field, block)) }
 			</BlockWrapper>
 		);
 	}
 
-	renderWrapper = field => {
+	renderWrapper = (field, block) => {
 
 		const { type, name, half, showIf } = field;
 		const { data, templates: { field: FieldWrapper }, context } = this.props;
@@ -261,7 +280,7 @@ export default class ReactReduxFormGenerator extends Component {
 
 			return (
 				<div key={ name } className='fieldWrapperInvisible' style={ { display: 'none' } }>
-					{ this.renderField(field) }
+					{ this.renderField(field, block) }
 				</div>
 			);
 		}
@@ -271,6 +290,7 @@ export default class ReactReduxFormGenerator extends Component {
 				key={ name }
 				half={ half }
 				field={ field }
+				block={ block }
 				context={ context }
 				generator={ this }
 				onClick={ event => this.handleClick(event, field) }
@@ -280,7 +300,7 @@ export default class ReactReduxFormGenerator extends Component {
 		);
 	}
 
-	renderField = field => {
+	renderField = (field, block) => {
 
 		const { type, name, label, multiple, options, validations, extra } = field;
 		const { templates: { [type]: FieldRenderer }, Field, context } = this.props;
@@ -293,6 +313,7 @@ export default class ReactReduxFormGenerator extends Component {
 				type={ type }
 				name={ name }
 				field={ field }
+				block={ block }
 				label={ label || '' }
 				extra={ extra || {} }
 				context={ context }
@@ -312,10 +333,11 @@ export default class ReactReduxFormGenerator extends Component {
 			schema,
 			children,
 			onSubmit,
+			// templates,
 			handleSubmit
 		} = this.props;
 
-		// log('ReactReduxFormGenerator -> render', { schema });
+		// log('ReactReduxFormGenerator -> render', { schema, templates });
 
 		return (
 			<form id={ id } onSubmit={ handleSubmit(onSubmit) }>
