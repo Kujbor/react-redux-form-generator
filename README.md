@@ -2,14 +2,15 @@
 Forms generator for react/redux apps based on [redux-form](https://github.com/redux-form/redux-form) and JSON-schemas.
 
 ## Installation
+```
+npm install redux-form
+npm install react-redux-form-generator
+```
 
-`npm install redux-form`
-`npm install react-redux-form-generator`
-
-## Documentation
+## Usage
 The form generator uses the user-provided React Components for form fields (Input, Select, RadioButton etc.) and validation functions (for example required, onlyDigits). So, firstly, you need to create a wrapper that provides the generator with templates and validators and connects it to the redux-storage of the application.
 
-### ReactReduxFormGeneratorWrapper
+### Wrapper
 You can simply copy and paste this file and only change templates and validators to yours:
 
 ```jsx
@@ -20,8 +21,8 @@ import { connect } from "react-redux";
 import { reduxForm, Field, getFormValues, getFormSyncErrors } from "redux-form";
 
 // Here you need to import your JSX-templates for the Field wrapper,
-// the Fields` Block wrapper and the form controls themselves (Input, Radio etc).
-// We`ll look closer to them below in documentation
+// the Fields` Block wrapper and the form controls themselves (Input, Radio etc)
+// We`ll look closer to them below in this  documentation
 import TextField from "./TextField";
 import RadioField from "./RadioField";
 import SelectField from "./SelectField";
@@ -29,15 +30,13 @@ import BlockWrapper from "./BlockWrapper";
 import FieldWrapper from "./FieldWrapper";
 
 // Here you need to import your validate functions
-// We`ll look closer to them below in documentation
+// We`ll look closer to them below in this documentation
 import * as validators from "../utils/validators";
 
 import ReactReduxFormGenerator from "./ReactReduxFormGenerator";
 
 class ReactReduxFormGeneratorWrapper extends Component {
-
   componentWillReceiveProps({ data: nextData, errors: nextErrors }) {
-
     const {
       onChange,
       data: prevData,
@@ -52,7 +51,6 @@ class ReactReduxFormGeneratorWrapper extends Component {
   }
 
   render() {
-
     const {
       id,
       form,
@@ -71,7 +69,8 @@ class ReactReduxFormGeneratorWrapper extends Component {
         Field={Field}
         schema={schema}
         context={context}
-        validators={validators} // Specify your validators here
+        // Specify your validate functions here
+        validators={validators}
         initialValues={initialValues}
         onChange={onChange}
         onSubmit={onSubmit}
@@ -81,7 +80,7 @@ class ReactReduxFormGeneratorWrapper extends Component {
           field: FieldWrapper,
           text: TextField,
           radio: RadioField,
-          select: SelectField,
+          select: SelectField
         }}
       >
         {children}
@@ -117,90 +116,60 @@ If you created ReactReduxFormGeneratorWrapper as above without changes
 you can now start to generate forms:
 
 ```jsx
-import _ from 'lodash';
-import { PureComponent } from 'react';
+import _ from "lodash";
+import { PureComponent } from "react";
 
-import ReactReduxFormGeneratorWrapper from './ReactReduxFormGeneratorWrapper';
+import ReactReduxFormGeneratorWrapper from "./ReactReduxFormGeneratorWrapper";
 
 // We will look closer to the schemas and values below in documentation
-import formSchema from '../data/schema.json';
-import initialValues from '../data/values.json';
+import formSchema from "../data/schema.json";
+import initialValues from "../data/values.json";
 
 export default class Demo extends PureComponent {
+  state = {
+    savedValues: initialValues,
+    invalidateFields: {}
+  };
 
-	state = {
-		savedValues: initialValues,
-		invalidateFields: {}
-	}
+  componentWillMount() {
+    const savedValues = JSON.parse(localStorage.getItem("demo"));
+    if (savedValues) this.setState({ savedValues });
+  }
 
-	componentWillMount() {
+  handleChange = values => {
+    console.log("Demo -> handleChange", { values });
+  };
 
-		const savedValues = JSON.parse(localStorage.getItem('demo'));
+  handleSubmit = values => {
+    localStorage.setItem("demo", JSON.stringify(values));
+  };
 
-		log('Demo -> componentWillMount', { savedValues });
+  handleValidate = invalidateFields => {
+    this.setState({ invalidateFields });
+  };
 
-		if (savedValues) this.setState({ savedValues });
-	}
-
-	handleChange = values => {
-
-		log('Demo -> handleChange', { values });
-	}
-
-	handleSubmit = values => {
-
-		log('Demo -> handleSubmit', { values });
-
-		localStorage.setItem('demo', JSON.stringify(values));
-	}
-
-	handleValidate = invalidateFields => {
-
-		log('Demo -> handleValidate', { invalidateFields });
-
-		this.setState({ invalidateFields });
-	}
-
-	render() {
-
-		const { savedValues, invalidateFields } = this.state;
-
-		log('Demo -> render', { savedValues, invalidateFields });
-
-		return (
-			<div className='container d-flex flex-column justify-content-center h-100'>
-				<h2>ReactReduxFormGenerator</h2>
-				<hr />
-				<ReactReduxFormGeneratorWrapper
-					id='demo'
-					form='demo'
-					schema={ formSchema }
-					context={ this }
-					initialValues={ savedValues }
-					onChange={ this.handleChange }
-					onSubmit={ this.handleSubmit }
-					onValidate={ this.handleValidate }
-				/>
-				<div className='btn-group'>
-					<button
-						form='demo'
-						type='submit'
-						className='btn btn-primary btn-lg'
-					>
-						Submit after valid
-					</button>
-					<button
-						form='demo'
-						type='submit'
-						disabled={ !_.isEmpty(invalidateFields) }
-						className='btn btn-secondary btn-lg'
-					>
-						Disabled while invalid
-					</button>
-				</div>
-			</div>
-		);
-	}
+  render() {
+    const { savedValues, invalidateFields } = this.state;
+    return (
+      <>
+        <h2>ReactReduxFormGenerator</h2>
+        <hr />
+        <ReactReduxFormGeneratorWrapper
+          id="demo"
+          form="demo"
+          schema={formSchema}
+          context={this}
+          initialValues={savedValues}
+          onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
+          onValidate={this.handleValidate}
+        />
+        <button form="demo" type="submit">
+          Submit after valid
+        </button>
+      </>
+    );
+  }
 }
 ```
 
@@ -251,3 +220,48 @@ export default class Demo extends PureComponent {
 		<td></td>
 	</tr>
 </table>
+
+### Form`s schema example
+```json
+[{
+	"key": "simple-fields",
+	"fields": [{
+		"label": "Text Field",
+		"name": "text_field",
+		"type": "text",
+		"validations": ["required"]
+	}, {
+		"label": "Radios Field",
+		"name": "radios_field",
+		"type": "radios",
+		"options": [{
+			"label": "First",
+			"value": "1"
+		}, {
+			"label": "Second",
+			"value": "2"
+		}],
+		"validations": ["required"]
+	}, {
+		"label": "Select Field",
+		"name": "select_field",
+		"type": "select",
+		"options": [{
+			"label": "First",
+			"value": "1",
+			"showIf": "data.radios_field !== '2'"
+		}, {
+			"label": "Second",
+			"value": "2",
+			"showIf": "data.radios_field !== '1'"
+		}],
+		"validations": ["required"]
+	}]
+}]
+```
+
+### Validate functions example
+```js
+export const required = value => !value ? 'Is required!' : undefined;
+export const numeric = value => value && isNaN(value) ? 'Need to be a number' : undefined;
+```
