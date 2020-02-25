@@ -1,5 +1,5 @@
 # react-redux-form-generator
-Forms generator for react/redux apps based on [redux-form](https://github.com/redux-form/redux-form) and JSON-schemas.
+Forms generator for react/redux apps based on [redux-form](https://redux-form.com/7.4.2/) and JSON-schemas.
 
 ## Installation
 ```
@@ -8,9 +8,68 @@ npm install react-redux-form-generator
 ```
 
 ## Usage
-The form generator uses the user-provided React Components for form fields (Input, Select, RadioButton etc.) and validation functions (for example required, onlyDigits). So, firstly, you need to create a wrapper that provides the generator with templates and validators and connects it to the redux-storage of the application.
+
+```jsx
+import _ from "lodash";
+import { PureComponent } from "react";
+
+import ReactReduxFormGeneratorWrapper from "./ReactReduxFormGeneratorWrapper";
+
+// We will look closer to the schemas and values below in documentation
+import formSchema from "../data/schema.json";
+import initialValues from "../data/values.json";
+
+export default class Demo extends PureComponent {
+  state = {
+    savedValues: initialValues,
+    invalidateFields: {}
+  };
+
+  componentWillMount() {
+    const savedValues = JSON.parse(localStorage.getItem("demo"));
+    if (savedValues) this.setState({ savedValues });
+  }
+
+  handleChange = values => {
+    console.log("Demo -> handleChange", { values });
+  };
+
+  handleSubmit = values => {
+    localStorage.setItem("demo", JSON.stringify(values));
+  };
+
+  handleValidate = invalidateFields => {
+    this.setState({ invalidateFields });
+  };
+
+  render() {
+    const { savedValues, invalidateFields } = this.state;
+    return (
+      <>
+        <h2>ReactReduxFormGenerator</h2>
+        <hr />
+        <ReactReduxFormGeneratorWrapper
+          id="demo"
+          form="demo"
+          schema={formSchema}
+          context={this}
+          initialValues={savedValues}
+          onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
+          onValidate={this.handleValidate}
+        />
+        <button form="demo" type="submit">
+          Submit after valid
+        </button>
+      </>
+    );
+  }
+}
+```
 
 ### Wrapper
+The form generator uses the user-provided React Components for form fields (Input, Select, RadioButton etc.) and validation functions (for example required, onlyDigits). So, firstly, you need to create a wrapper that provides the generator with templates and validators and connects it to the redux-storage of the application.
+
 You can simply copy and paste this file and only change templates and validators to yours:
 
 ```jsx
@@ -22,7 +81,7 @@ import { reduxForm, Field, getFormValues, getFormSyncErrors } from "redux-form";
 
 // Here you need to import your JSX-templates for the Field wrapper,
 // the Fields` Block wrapper and the form controls themselves (Input, Radio etc)
-// We`ll look closer to them below in this  documentation
+// We`ll look closer to them below in this documentation
 import TextField from "./TextField";
 import RadioField from "./RadioField";
 import SelectField from "./SelectField";
@@ -108,84 +167,20 @@ export default connect(mapStateToGeneratorWrapperProps)(
   ReactReduxFormGeneratorWrapper
 );
 ```
-Then you can use ReactReduxFormGeneratorWrapper for generating forms as in example below.
-
-### Simple example
-If you created ReactReduxFormGeneratorWrapper as above without changes
-(other than specifying your templates and validators)
-you can now start to generate forms:
-
-```jsx
-import _ from "lodash";
-import { PureComponent } from "react";
-
-import ReactReduxFormGeneratorWrapper from "./ReactReduxFormGeneratorWrapper";
-
-// We will look closer to the schemas and values below in documentation
-import formSchema from "../data/schema.json";
-import initialValues from "../data/values.json";
-
-export default class Demo extends PureComponent {
-  state = {
-    savedValues: initialValues,
-    invalidateFields: {}
-  };
-
-  componentWillMount() {
-    const savedValues = JSON.parse(localStorage.getItem("demo"));
-    if (savedValues) this.setState({ savedValues });
-  }
-
-  handleChange = values => {
-    console.log("Demo -> handleChange", { values });
-  };
-
-  handleSubmit = values => {
-    localStorage.setItem("demo", JSON.stringify(values));
-  };
-
-  handleValidate = invalidateFields => {
-    this.setState({ invalidateFields });
-  };
-
-  render() {
-    const { savedValues, invalidateFields } = this.state;
-    return (
-      <>
-        <h2>ReactReduxFormGenerator</h2>
-        <hr />
-        <ReactReduxFormGeneratorWrapper
-          id="demo"
-          form="demo"
-          schema={formSchema}
-          context={this}
-          initialValues={savedValues}
-          onChange={this.handleChange}
-          onSubmit={this.handleSubmit}
-          onValidate={this.handleValidate}
-        />
-        <button form="demo" type="submit">
-          Submit after valid
-        </button>
-      </>
-    );
-  }
-}
-```
 
 ### Props specification
 <table>
 	<tr>
 		<th>id</th>
-		<td>Passes DOM attribute <strong>id</strong> for <strong>&lt;form&gt;</strong> tag from parent components</td>
+		<td>Passes string for DOM attribute <strong>id</strong> for <strong>&lt;form></strong> tag from parent components.</td>
 	</tr>
 	<tr>
 		<th>data</th>
-		<td>For pass state of form from redux store (<strong>ReactReduxFormGenerator</strong> not importing <strong>redux</strong> internally, so you need to provide it yourself)</td>
+		<td>For pass state of form from redux store (<strong>ReactReduxFormGenerator</strong> not importing <strong>redux</strong> internally, so you need to provide it yourself).</td>
 	</tr>
 	<tr>
 		<th>Field</th>
-		<td>Field wrapper from <strong>redux-form</strong> (<strong>ReactReduxFormGenerator</strong> not importing <strong>redux-form</strong> internally, so you need to provide it yourself)</td>
+		<td>Field wrapper from <a href="https://redux-form.com/7.4.2/">redux-form</a> (<strong>ReactReduxFormGenerator</strong> not importing <strong>redux-form</strong> internally, so you need to provide it yourself). You can find out about <a href="https://redux-form.com/7.4.2/docs/api/field.md/">Field</a> on their website or just copy and paste this code shown above.</td>
 	</tr>
 	<tr>
 		<th>schema</th>
@@ -197,27 +192,77 @@ export default class Demo extends PureComponent {
 	</tr>
 	<tr>
 		<th>context</th>
-		<td></td>
+		<td>
+			You can provide any additional data here so that you can use it later inside the schema.
+<pre>{
+  ...
+  isNew: true,
+  status: 'created',
+  ...
+}</pre>
+		</td>
 	</tr>
 	<tr>
 		<th>onSubmit</th>
-		<td></td>
+		<td>
+			Callback function to provide it for <strong>handleSubmit(onSubmit)</strong> from <a href="https://redux-form.com/7.4.2/">redux-form</a>. You can find out about <a href="https://redux-form.com/7.4.2/docs/api/props.md/#-code-handlesubmit-eventorsubmit-function-code-">handleSubmit(onSubmit)</a> on their website or just copy and paste this code shown above.
+			<pre>values => doSomething()</pre>
+		</td>
 	</tr>
 	<tr>
 		<th>templates</th>
-		<td>JSX-component that wraps each form field</td>
+		<td>
+			Object of JSX-components that includes required templates (BlockWrapper and FieldWrapper) and the form controls themselves (Input, Radio etc).
+<pre>
+{
+  BlockWrapper: ({ title, caption, children }) => ([
+    &lt;h3>{title}&lt;/h3>
+    &lt;p>{caption}&lt;/p>
+    {children}
+  ]),
+  FieldWrapper: ({ children }) => ([
+    &lt;>{children}&lt;/>
+  ]),
+  TextField: ({ type, meta, input, label }) => ([
+    &lt;label>{label}&lt;/label>
+    &lt;input type={type} {...input} />
+    &lt;p>{meta.error}&lt;/p>
+  ]),
+  ...
+}
+</pre>
+		</td>
 	</tr>
 	<tr>
 		<th>validators</th>
-		<td></td>
-	</tr>
-	<tr>
-		<th>handleSubmit</th>
-		<td></td>
+		<td>
+			The object of validation functions. Functions take the value of the field being checked and the values ​​of other fields of the form and should return an error that you can render later, or nothing if the value is valid.
+<pre>{
+  ...
+  validationName: (value, otherValues) => {
+    if (theValidationFailed()) return 'Detected some error'
+  }
+}</pre>
+In addition, you can pass some additional parameters to validation scope from the schema using functions that return a validation function.
+<pre>{
+  ...
+  anotherValidationName: extraParams => (value, otherValues) => {
+    if (theValidationFailed()) return 'Detected yet another error'
+  }
+}</pre>
+		</td>
 	</tr>
 	<tr>
 		<th>initialValues</th>
-		<td></td>
+		<td>
+			An object with an initial state of form values in the same format as the form data in a reduct state.
+<pre>{
+  ...
+  firstName: 'First Name',
+  lastName: 'Last Name',
+  ...
+}</pre>
+		</td>
 	</tr>
 </table>
 
